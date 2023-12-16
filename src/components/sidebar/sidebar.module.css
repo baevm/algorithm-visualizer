@@ -1,0 +1,16 @@
+
+
+.sidebar_item {
+  cursor: pointer;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 10px;
+  color: var(--mantine-color-text);
+}
+
+.sidebar_item:active {
+  transform: translateY(0.0625rem);
+}
+
+.sidebar_item:hover {
+  background-color: var(--mantine-color-default-hover);
+}
