@@ -1,32 +1,12 @@
+import { ALGORITHMS, AlgoValues } from '@/constants'
 import { ActionIcon, Box, Flex, Group, ScrollArea, Title } from '@mantine/core'
 import { useState } from 'react'
+import { TbArrowNarrowLeft } from 'react-icons/tb'
+import BFSMenu from '../algorithms/BFS/BFSMenu'
+import BinarySearchMenu from '../algorithms/BinarySearch/BinarySearchMenu'
+import DFSMenu from '../algorithms/DFS/DFSMenu'
+import SortMenu from '../algorithms/Sort/SortMenu'
 import styles from './sidebar.module.css'
-import { TbArrowNarrowLeft, TbSortAscendingNumbers, TbListSearch, TbBinaryTree } from 'react-icons/tb'
-
-const ALGORITHMS = [
-  {
-    title: 'Бинарный поиск',
-    icon: <TbListSearch />,
-    value: 'binary-search',
-  },
-  {
-    title: 'Сортировка',
-    icon: <TbSortAscendingNumbers />,
-    value: 'sort',
-  },
-  {
-    title: 'DFS',
-    icon: <TbBinaryTree />,
-    value: 'dfs',
-  },
-  {
-    title: 'BFS',
-    icon: <TbBinaryTree />,
-    value: 'bfs',
-  },
-] as const
-
-type AlgoValues = (typeof ALGORITHMS)[number]['value']
 
 const AlgoList = ({ setActiveAlgo }: { setActiveAlgo: (name: AlgoValues) => void }) => {
   return ALGORITHMS.map((algo) => (
@@ -37,7 +17,7 @@ const AlgoList = ({ setActiveAlgo }: { setActiveAlgo: (name: AlgoValues) => void
   ))
 }
 
-const CurrentMenuPage = ({
+const CurrentAlgoMenu = ({
   activeAlgo,
   setActiveAlgo,
 }: {
@@ -46,16 +26,16 @@ const CurrentMenuPage = ({
 }) => {
   switch (activeAlgo) {
     case 'binary-search':
-      return <div>Бинарный поиск</div>
+      return <BinarySearchMenu />
 
     case 'sort':
-      return <div>Сортировка</div>
+      return <SortMenu />
 
     case 'dfs':
-      return <div>DFS</div>
+      return <DFSMenu />
 
     case 'bfs':
-      return <div>BFS</div>
+      return <BFSMenu />
 
     default:
       return <AlgoList setActiveAlgo={setActiveAlgo} />
@@ -88,9 +68,9 @@ const Sidebar = () => {
     <>
       <SidebarTitle activeAlgo={activeAlgo} goBack={() => setActiveAlgo(null)} />
       <Flex direction='column' my='md' component={ScrollArea} style={{ flex: '1' }}>
-        <CurrentMenuPage activeAlgo={activeAlgo} setActiveAlgo={setActiveAlgo} />
+        <CurrentAlgoMenu activeAlgo={activeAlgo} setActiveAlgo={setActiveAlgo} />
       </Flex>
-      <div>Футер...</div>
+      <div>TODO Футер...</div>
     </>
   )
 }

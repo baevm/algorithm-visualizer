@@ -1,5 +1,5 @@
-import { ActionIcon, Burger, Group, Text, Title, useComputedColorScheme, useMantineColorScheme } from '@mantine/core'
-import { TbBinary, TbBulb, TbBulbOff } from 'react-icons/tb'
+import { ActionIcon, Burger, Group, Text, useComputedColorScheme, useMantineColorScheme } from '@mantine/core';
+import { TbBulb, TbBulbOff } from 'react-icons/tb';
 
 const Header = ({ opened, toggle }: { opened: boolean; toggle: () => void }) => {
   const { setColorScheme } = useMantineColorScheme()
