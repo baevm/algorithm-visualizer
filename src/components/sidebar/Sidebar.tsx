@@ -61,9 +61,13 @@ const SidebarTitle = ({ activeAlgo, goBack }: { activeAlgo: AlgoValues | null; g
   )
 }
 
-const Sidebar = () => {
-  const [activeAlgo, setActiveAlgo] = useState<AlgoValues | null>(null)
-
+const Sidebar = ({
+  activeAlgo,
+  setActiveAlgo,
+}: {
+  activeAlgo: AlgoValues | null
+  setActiveAlgo: (v: AlgoValues | null) => void
+}) => {
   return (
     <>
       <SidebarTitle activeAlgo={activeAlgo} goBack={() => setActiveAlgo(null)} />

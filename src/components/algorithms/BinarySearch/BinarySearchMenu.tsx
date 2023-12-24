@@ -1,3 +1,4 @@
+import { useBinarySearch } from '@/stores/binarySearchStore'
 import { Button, Group, NumberInput, Radio, Stack, Textarea } from '@mantine/core'
 import { useState } from 'react'
 
@@ -12,19 +13,28 @@ function generateRandomArray(size: number, min: number, max: number) {
   return arr.sort((a, b) => a - b).map((n) => n.toString())
 }
 
+const modes = ['auto-mode', 'steps-mode'] as const
+type Mode = (typeof modes)[number]
+
 const BinarySearchMenu = () => {
-  const [array, setArray] = useState<string[]>([])
-  const [target, setTarget] = useState('')
-  const [mode, setMode] = useState('auto-mode')
+  const { array, target, isWorking, setArray, setIsWorking, setTarget, nextStep, reset } = useBinarySearch((state) => ({
+    array: state.array,
+    target: state.target,
+    isWorking: state.isWorking,
+    setArray: state.setArray,
+    setTarget: state.setTarget,
+    nextStep: state.nextStep,
+    reset: state.reset,
+    setIsWorking: state.setIsWorking,
+  }))
+
+  const [mode, setMode] = useState<Mode>('auto-mode')
   const [timeout, setTimeout] = useState(1000)
-  const [step, setStep] = useState(0)
-  const [error, setError] = useState('')
-  const [isWorking, setIsWorking] = useState(false)
 
   const setRandomData = () => {
     const min = 1
     const max = 100
-    const size = 10
+    const size = 12
 
     const rndArr = generateRandomArray(size, min, max)
     const rndTargetFromArr = rndArr[Math.floor(Math.random() * rndArr.length)]
@@ -39,20 +49,7 @@ const BinarySearchMenu = () => {
     setArray(arr)
   }
 
-  const onStart = () => {
-    const arrOfNums = []
-
-    for (let i = 0; i < array.length; i++) {
-      if (isNaN(parseInt(array[i]))) {
-        setError('Массив должен состоять из чисел')
-        return
-      }
-
-      arrOfNums.push(parseInt(array[i]))
-    }
-
-    setIsWorking(true)
-  }
+  const onStart = () => {}
 
   return (
     <Stack>
@@ -65,11 +62,11 @@ const BinarySearchMenu = () => {
       <NumberInput
         label='Число для поиска'
         placeholder='Введите число...'
-        value={target}
+        value={target || ''}
         onChange={(num) => setTarget(num.toString())}
       />
 
-      <Radio.Group label='Режим работы' defaultValue={mode} value={mode} onChange={setMode}>
+      <Radio.Group label='Режим работы' defaultValue={mode} value={mode} onChange={(v) => setMode(v as Mode)}>
         <Group>
           <Radio label='Автоматически' value='auto-mode' />
           <Radio label='По шагам' value='steps-mode' />
@@ -88,14 +85,23 @@ const BinarySearchMenu = () => {
 
       <Group justify='space-between' grow>
         <Button onClick={setRandomData}>Рандом</Button>
-        <Button onClick={onStart}>Запуск</Button>
-        <Button>Сбросить</Button>
+        <Button onClick={reset}>Сбросить</Button>
       </Group>
 
-      {/* <Group grow>
-        <Button>Назад</Button>
-        <Button>Дальше</Button>
-      </Group> */}
+      <Group justify='space-between' grow>
+        {!isWorking ? (
+          <Button onClick={setIsWorking}>Запуск</Button>
+        ) : (
+          <>
+            {mode === 'steps-mode' && (
+              <>
+                <Button onClick={nextStep}>Шаг вперед</Button>
+                <Button>Шаг назад</Button>
+              </>
+            )}
+          </>
+        )}
+      </Group>
     </Stack>
   )
 }
