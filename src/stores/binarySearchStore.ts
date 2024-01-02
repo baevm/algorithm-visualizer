@@ -1,8 +1,16 @@
 import { create } from 'zustand'
 
+type HistoryStep = {
+  left: number
+  right: number
+  mid: number
+  isFound: boolean
+  isNotExist: boolean
+}
+
 interface BinarySearchStore {
-  array: number[]
-  target: number | null
+  array: string[]
+  target: string | null
 
   left: number
   right: number
@@ -12,10 +20,14 @@ interface BinarySearchStore {
   isFound: boolean
   isNotExist: boolean
 
+  history: HistoryStep[]
+  step: number
+
   setArray: (searchArray: string[]) => void
   setTarget: (target: string) => void
   setIsWorking: () => void
   nextStep: () => void
+  beforeStep: () => void
   reset: () => void
 }
 
@@ -28,6 +40,8 @@ export const useBinarySearch = create<BinarySearchStore>((set) => ({
   isWorking: false,
   isFound: false,
   isNotExist: false,
+  history: [],
+  step: 0,
 
   setArray: (array) =>
     set(() => {
@@ -35,52 +49,89 @@ export const useBinarySearch = create<BinarySearchStore>((set) => ({
       const right = array.length - 1
       const mid = Math.floor((left + right) / 2)
 
-      const parsedArray: number[] = []
-      for (let i = 0; i < array.length; i++) {
-        const element = parseInt(array[i])
+      const history = [{ left, right, mid, isFound: false, isNotExist: false }]
 
-        if (!isNaN(element)) {
-          parsedArray.push(element)
+      return { array: array, left, right, mid, history, isFound: false, step: 0 }
+    }),
+
+  setTarget: (target) => set({ target }),
+  setIsWorking: () =>
+    set((state) => {
+      // check if array is valid
+      for (const num of state.array) {
+        if (isNaN(parseInt(num))) {
+          return {}
         }
       }
 
-      return { array: parsedArray, left, right, mid, isFound: false }
+      return { isWorking: !state.isWorking }
     }),
-
-  setTarget: (target) => set({ target: parseInt(target) }),
-  setIsWorking: () => set((state) => ({ isWorking: !state.isWorking })),
 
   nextStep: () =>
     set((state) => {
-      const { array, target, left, right, mid } = state
+      const { array, target, left, right, mid, history, step } = state
 
-      if (!target || isNaN(target) || array.length === 0) {
+      if (!target || isNaN(parseInt(target)) || array.length === 0) {
         return {}
       }
 
-      if (array[mid] === target) {
-        return { isFound: true }
+      // Array contains string, first convert to number
+      // Same with target
+      const midValue = parseInt(array[mid])
+      const targetValue = parseInt(target)
+
+      if (midValue === targetValue) {
+        return { isFound: true, isWorking: false }
       }
 
       if (left >= right) {
         return { isNotExist: true }
       }
 
-      if (array[mid] < target) {
+      if (midValue < targetValue) {
         const newLeft = mid + 1
         const newMid = Math.floor((newLeft + right) / 2)
 
-        return { left: newLeft, mid: newMid }
+        history.push({ left: newLeft, right, mid: newMid, isFound: false, isNotExist: false })
+
+        return { left: newLeft, mid: newMid, history, step: step + 1 }
       }
 
-      if (array[mid] > target) {
+      if (midValue > targetValue) {
         const newRight = mid - 1
         const newMid = Math.floor((left + newRight) / 2)
 
-        return { right: newRight, mid: newMid }
+        history.push({ left, right: newRight, mid: newMid, isFound: false, isNotExist: false })
+
+        return { right: newRight, mid: newMid, history, step: step + 1 }
       }
 
       return {}
+    }),
+
+  beforeStep: () =>
+    set((state) => {
+      const { history, step } = state
+
+      if (step === 0) {
+        return {}
+      }
+
+      const newStep = step - 1
+
+      const { left, right, mid, isFound, isNotExist } = history[newStep]
+
+      const newHistory = history.slice(0, newStep + 1)
+
+      return {
+        left,
+        right,
+        mid,
+        isFound,
+        isNotExist,
+        step: newStep,
+        history: newHistory,
+      }
     }),
 
   reset: () =>

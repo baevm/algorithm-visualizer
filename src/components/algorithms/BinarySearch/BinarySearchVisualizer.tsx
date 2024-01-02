@@ -1,5 +1,5 @@
 import { useBinarySearch } from '@/stores/binarySearchStore'
-import { Box, Flex, Group } from '@mantine/core'
+import { Box, Flex, Group, Stack } from '@mantine/core'
 import { useEffect } from 'react'
 import { TbArrowNarrowUp } from 'react-icons/tb'
 
@@ -16,11 +16,11 @@ const BinarySearchVisualizer = () => {
 
   useEffect(() => {
     if (isFound) {
-      alert('found')
+      alert(`Число найдено. Индекс: ${mid}.`)
     }
 
     if (isNotExist) {
-      alert('target not exist')
+      alert(`Число не найдено.`)
     }
   }, [isFound, isNotExist])
 
@@ -28,7 +28,7 @@ const BinarySearchVisualizer = () => {
     <Flex align='center' justify='center' h='100%' w='100%'>
       <Group>
         {array.map((item, index) => (
-          <Box style={{ position: 'relative' }} key={index}>
+          <Box className='item' py='30px' style={{ position: 'relative' }} key={index}>
             <Box
               style={{
                 minWidth: '60px',
@@ -39,7 +39,9 @@ const BinarySearchVisualizer = () => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 borderRadius: '10px',
-                fontWeight: 'bold',
+                fontWeight: index < left || index > right ? 'normal' : 'bold',
+                backgroundColor:
+                  index < left || index > right ? 'var(--mantine-color-blue-6)' : 'var(--mantine-color-body)',
               }}>
               {item}
             </Box>
@@ -51,40 +53,22 @@ const BinarySearchVisualizer = () => {
                 transform: 'translateX(-50%)',
               }}>
               {index == left && (
-                <Box
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                  }}>
+                <Stack gap='0' align='center'>
                   <TbArrowNarrowUp />
                   left
-                </Box>
+                </Stack>
               )}
               {index == mid && (
-                <Box
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                  }}>
+                <Stack gap='0' align='center'>
                   <TbArrowNarrowUp />
                   mid
-                </Box>
+                </Stack>
               )}
               {index == right && (
-                <Box
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                  }}>
+                <Stack gap='0' align='center'>
                   <TbArrowNarrowUp />
                   right
-                </Box>
+                </Stack>
               )}
             </Box>
           </Box>

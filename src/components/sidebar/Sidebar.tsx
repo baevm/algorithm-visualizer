@@ -1,6 +1,5 @@
 import { ALGORITHMS, AlgoValues } from '@/constants'
 import { ActionIcon, Box, Flex, Group, ScrollArea, Title } from '@mantine/core'
-import { useState } from 'react'
 import { TbArrowNarrowLeft } from 'react-icons/tb'
 import BFSMenu from '../algorithms/BFS/BFSMenu'
 import BinarySearchMenu from '../algorithms/BinarySearch/BinarySearchMenu'
@@ -51,12 +50,14 @@ const SidebarTitle = ({ activeAlgo, goBack }: { activeAlgo: AlgoValues | null; g
     )
   }
 
+  const title = ALGORITHMS.find((a) => a.value === activeAlgo)!.title
+
   return (
     <Group>
       <ActionIcon variant='subtle' onClick={goBack}>
         <TbArrowNarrowLeft />
       </ActionIcon>
-      <Title order={3}>{ALGORITHMS.find((a) => a.value === activeAlgo)!.title}</Title>
+      <Title order={3}>{title}</Title>
     </Group>
   )
 }
