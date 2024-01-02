@@ -140,6 +140,8 @@ export const useBinarySearch = create<BinarySearchStore>((set) => ({
       const right = state.array.length - 1
       const mid = Math.floor((left + right) / 2)
 
-      return { left, right, mid, isFound: false, isWorking: false, isNotExist: false }
+      const history = [{ left, right, mid, isFound: false, isNotExist: false }]
+
+      return { left, right, mid, isFound: false, isWorking: false, isNotExist: false, history, step: 0 }
     }),
 }))
