@@ -1,4 +1,12 @@
-# algortihm-visualizer
+# algorithm-visualizer
+
+
+Алгоритмы:
+
+- [x] Бинарный поиск
+- [ ] Сортировка
+- [ ] BFS
+- [ ] DFS
 
 ```bash
 # Install dependencies
