@@ -26,6 +26,7 @@ interface BinarySearchStore {
   setArray: (searchArray: string[]) => void
   setTarget: (target: string) => void
   setIsWorking: () => void
+
   nextStep: () => void
   beforeStep: () => void
   reset: () => void

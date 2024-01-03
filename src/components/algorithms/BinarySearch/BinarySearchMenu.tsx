@@ -72,39 +72,6 @@ const BinarySearchMenu = () => {
 
   return (
     <Stack>
-      <Textarea
-        label='Массив для поиска'
-        placeholder='Введите массив в формате 1,2,3,4...'
-        disabled={isWorking}
-        value={array.join(',')}
-        onChange={onChangeArray}
-      />
-      <NumberInput
-        label='Число для поиска'
-        placeholder='Введите число...'
-        disabled={isWorking}
-        value={target || ''}
-        onChange={(num) => setTarget(num.toString())}
-      />
-
-      <Radio.Group label='Режим работы' defaultValue={mode} value={mode} onChange={(v) => setMode(v as Mode)}>
-        <Stack>
-          <Radio disabled={isWorking} label='Автоматически' value='auto-mode' />
-          <Radio disabled={isWorking} label='По шагам' value='steps-mode' />
-        </Stack>
-      </Radio.Group>
-
-      {mode === 'auto-mode' && (
-        <NumberInput
-          label='Задержка (мс)'
-          description='Задержка между шагами алгоритма'
-          placeholder='Введите число...'
-          disabled={isWorking}
-          value={stepTimeout}
-          onChange={(num) => setStepTimeout(+num)}
-        />
-      )}
-
       <Group justify='space-between' grow>
         <Button onClick={setRandomData}>Рандом</Button>
         <Button onClick={reset}>Сбросить</Button>
@@ -124,6 +91,40 @@ const BinarySearchMenu = () => {
           </>
         )}
       </Group>
+
+      <Textarea
+        label='Массив для поиска'
+        placeholder='Введите массив в формате 1,2,3,4...'
+        disabled={isWorking}
+        value={array.join(',')}
+        onChange={onChangeArray}
+      />
+      <NumberInput
+        label='Число для поиска'
+        placeholder='Введите число...'
+        disabled={isWorking}
+        value={target || ''}
+        onChange={(num) => setTarget(num.toString())}
+        hideControls={true}
+      />
+
+      <Radio.Group label='Режим работы' defaultValue={mode} value={mode} onChange={(v) => setMode(v as Mode)}>
+        <Stack>
+          <Radio disabled={isWorking} label='Автоматически' value='auto-mode' />
+          <Radio disabled={isWorking} label='По шагам' value='steps-mode' />
+        </Stack>
+      </Radio.Group>
+
+      {mode === 'auto-mode' && (
+        <NumberInput
+          label='Задержка (мс)'
+          description='Задержка между шагами алгоритма'
+          placeholder='Введите число...'
+          disabled={isWorking}
+          value={stepTimeout}
+          onChange={(num) => setStepTimeout(+num)}
+        />
+      )}
     </Stack>
   )
 }
