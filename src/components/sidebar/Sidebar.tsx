@@ -72,10 +72,10 @@ const Sidebar = ({
   return (
     <>
       <SidebarTitle activeAlgo={activeAlgo} goBack={() => setActiveAlgo(null)} />
-      <Flex direction='column' my='md' component={ScrollArea} style={{ flex: '1' }}>
+      <Flex direction='column' my='md' renderRoot={(props) => <ScrollArea {...props} offsetScrollbars={true} type='auto' />} style={{ flex: '1' }}>
         <CurrentAlgoMenu activeAlgo={activeAlgo} setActiveAlgo={setActiveAlgo} />
       </Flex>
-      <div>TODO Футер...</div>
+      {/* <div>TODO Футер...</div> */}
     </>
   )
 }

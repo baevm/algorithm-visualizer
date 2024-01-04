@@ -65,6 +65,8 @@ const BinarySearchMenu = () => {
   }, [isWorking, mode, stepTimeout, nextStep, isFound])
 
   useEffect(() => {
+    setRandomData()
+
     return () => {
       reset()
     }
@@ -123,6 +125,7 @@ const BinarySearchMenu = () => {
           disabled={isWorking}
           value={stepTimeout}
           onChange={(num) => setStepTimeout(+num)}
+          hideControls={true}
         />
       )}
     </Stack>

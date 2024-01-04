@@ -1,32 +1,31 @@
 import { generateUnsortedArray } from '@/lib/random'
-import { useSortStore } from '@/stores/sortStore'
+import { SortAlgorithm, useSortStore } from '@/stores/sortStore'
 import { Button, Group, NumberInput, Radio, Stack, Switch, Textarea } from '@mantine/core'
 import { useEffect, useState } from 'react'
 
 const modes = ['auto-mode', 'steps-mode'] as const
 type Mode = (typeof modes)[number]
 
-const algorithms = ['bubble-sort', 'insertion-sort', 'selection-sort', 'merge-sort', 'quick-sort'] as const
-type Algorithm = (typeof algorithms)[number]
-
 const SortMenu = () => {
-  const [algorithm, setAlgorithm] = useState<Algorithm>('bubble-sort')
   const [mode, setMode] = useState<Mode>('auto-mode')
-  const [stepTimeout, setStepTimeout] = useState(500)
-  const [arraySize, setArraySize] = useState('20')
+  const [stepTimeout, setStepTimeout] = useState(50)
+  const [arraySize, setArraySize] = useState('50')
 
   const {
     array,
+    algorithm,
     isWorking,
     isShowNumbers,
     isSorted,
+    setAlgorithm,
     setIsShowNumbers,
     setArray,
     startWorking,
-    nextStepBubbleSort,
+    nextStep,
     reset,
     pause,
   } = useSortStore((state) => ({
+    algorithm: state.algorithm,
     array: state.array,
     isWorking: state.isWorking,
     isShowNumbers: state.isShowNumbers,
@@ -35,19 +34,18 @@ const SortMenu = () => {
     setArray: state.setArray,
     startWorking: state.startWorking,
     setIsShowNumbers: state.setIsShowNumbers,
-    nextStepBubbleSort: state.nextStepBubbleSort,
+    nextStep: state.nextStep,
     reset: state.reset,
+    setAlgorithm: state.setAlgorithm,
   }))
 
   const setRandomData = () => {
     const array = generateUnsortedArray(+arraySize).map((item) => item.toString())
-
     setArray(array)
   }
 
   const onChangeArray = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const arr = e.currentTarget.value.split(',')
-
     setArray(arr)
   }
 
@@ -60,7 +58,7 @@ const SortMenu = () => {
   useEffect(() => {
     if (isWorking && mode === 'auto-mode') {
       const timer = setInterval(() => {
-        nextStepBubbleSort()
+        nextStep()
 
         if (isSorted) {
           clearInterval(timer)
@@ -71,9 +69,11 @@ const SortMenu = () => {
         clearInterval(timer)
       }
     }
-  }, [isWorking, mode, stepTimeout, nextStepBubbleSort, isSorted])
+  }, [isWorking, mode, stepTimeout, nextStep, isSorted])
 
   useEffect(() => {
+    setRandomData()
+
     return () => {
       reset()
     }
@@ -91,8 +91,8 @@ const SortMenu = () => {
 
         {isWorking && mode === 'steps-mode' && (
           <>
-            <Button>Шаг назад</Button>
-            <Button onClick={nextStepBubbleSort}>Шаг вперед</Button>
+            <Button disabled>Шаг назад</Button>
+            <Button onClick={nextStep}>Шаг вперед</Button>
           </>
         )}
 
@@ -111,7 +111,7 @@ const SortMenu = () => {
       <NumberInput
         label='Размер массива'
         placeholder='Введите размер...'
-        description='Для случайной генерации'
+        description='Для случайной генерации. Рекомендуется не более 100 элементов.'
         value={arraySize || ''}
         onChange={(v) => setArraySize(v.toString())}
         hideControls={true}
@@ -129,13 +129,13 @@ const SortMenu = () => {
         label='Алгоритм'
         defaultValue={algorithm}
         value={algorithm}
-        onChange={(v) => setAlgorithm(v as Algorithm)}>
+        onChange={(v) => setAlgorithm(v as SortAlgorithm)}>
         <Stack>
-          <Radio label='Сортировка пузырьком' value='bubble-sort' disabled={isWorking} />
-          <Radio label='Сортировка вставками' value='insertion-sort' disabled={true} />
-          <Radio label='Сортировка выбором' value='selection-sort' disabled={true} />
-          <Radio label='Сортировка слиянием' value='merge-sort' disabled={true} />
-          <Radio label='Быстрая сортировка' value='quick-sort' disabled={true} />
+          <Radio label='Сортировка пузырьком'  value='bubble-sort' disabled={isWorking} />
+          <Radio label='Сортировка вставками' value='insertion-sort' disabled={isWorking} />
+          <Radio label='Сортировка выбором' value='selection-sort' disabled={isWorking} />
+          <Radio label='Сортировка слиянием' value='merge-sort' disabled={isWorking} />
+          <Radio label='Быстрая сортировка' value='quick-sort' disabled={isWorking} />
         </Stack>
       </Radio.Group>
 
@@ -154,6 +154,7 @@ const SortMenu = () => {
           value={stepTimeout}
           onChange={(num) => setStepTimeout(+num)}
           disabled={isWorking}
+          hideControls={true}
         />
       )}
     </Stack>

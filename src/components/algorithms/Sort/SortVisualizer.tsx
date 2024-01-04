@@ -8,9 +8,12 @@ const SortVisualizer = () => {
     activeIndexes: state.activeIndexes,
   }))
 
+  const max = Math.max(...array.map((item) => +item))
+  const len = array.length
+
   return (
     <Flex align='center' justify='center' h='100%' w='100%'>
-      <Group align='flex-end' justify='center' wrap='nowrap' w='100%' gap='1px'>
+      <Group align='flex-end' wrap='nowrap' w='100%' h='50%' gap='1px' style={{ overflowX: 'auto', overflowY: 'hidden' }}>
         {array.map((item, index) => (
           <Box
             key={index}
@@ -18,8 +21,8 @@ const SortVisualizer = () => {
               border: '1px solid var(--mantine-color-blue-light-color)',
               fontWeight: 'bold',
               padding: '5px',
-              width: '2%',
-              height: `${+item * 10}px`,
+              width: `${100 / len}%`,
+              height: `${(+item * 100) / max}%`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',

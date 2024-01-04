@@ -11,5 +11,6 @@ module.exports = {
     'no-undef': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     'prefer-const': 'off',
+    'no-extra-semi': 'off',
   },
 }

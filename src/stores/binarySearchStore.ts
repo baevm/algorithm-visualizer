@@ -68,6 +68,7 @@ export const useBinarySearch = create<BinarySearchStore>((set) => ({
       return { isWorking: !state.isWorking }
     }),
 
+  // FIXME: refactor binary search to use generators
   nextStep: () =>
     set((state) => {
       const { array, target, left, right, mid, history, step } = state
