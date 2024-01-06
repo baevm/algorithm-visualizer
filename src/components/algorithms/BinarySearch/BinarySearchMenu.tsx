@@ -25,7 +25,7 @@ const BinarySearchMenu = () => {
     isFound,
     isWorking,
     mode,
-    timeout: 50,
+    timeout: 1000,
     nextStep,
   })
 
