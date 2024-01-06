@@ -12,14 +12,9 @@ export const ALGORITHMS = [
     value: 'sort',
   },
   {
-    title: 'DFS',
+    title: 'Бинарное дерево',
     icon: <TbBinaryTree />,
-    value: 'dfs',
-  },
-  {
-    title: 'BFS',
-    icon: <TbBinaryTree />,
-    value: 'bfs',
+    value: 'binary-tree',
   },
 ] as const
 

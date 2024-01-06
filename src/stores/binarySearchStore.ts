@@ -1,3 +1,4 @@
+import { validateArray } from '@/lib/validator'
 import { create } from 'zustand'
 
 type HistoryStep = {
@@ -58,11 +59,10 @@ export const useBinarySearch = create<BinarySearchStore>((set) => ({
   setTarget: (target) => set({ target }),
   setIsWorking: () =>
     set((state) => {
-      // check if array is valid
-      for (const num of state.array) {
-        if (isNaN(parseInt(num))) {
-          return {}
-        }
+      const isValidArray = validateArray(state.array)
+
+      if (!isValidArray) {
+        return {}
       }
 
       return { isWorking: !state.isWorking }

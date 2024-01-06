@@ -1,26 +1,37 @@
 import { useAutoMode } from '@/hooks/useAutoMode'
 import { Mode, useOperatingMode } from '@/hooks/useOperatingMode'
-import { generateRandomSortedArray } from '@/lib/random'
-import { useBinarySearch } from '@/stores/binarySearchStore'
+import { DFSTechnique, TreeAlgorithmType, useBinaryTree } from '@/stores/binaryTreeStore'
 import { Button, Group, NumberInput, Radio, Stack, Textarea } from '@mantine/core'
 import { useEffect } from 'react'
 
-const BinarySearchMenu = () => {
-  const { array, target, isWorking, isFound, setArray, setIsWorking, setTarget, nextStep, beforeStep, reset } =
-    useBinarySearch((state) => ({
-      array: state.array,
-      target: state.target,
-      isWorking: state.isWorking,
-      isFound: state.isFound,
-      setArray: state.setArray,
-      setTarget: state.setTarget,
-      nextStep: state.nextStep,
-      beforeStep: state.beforeStep,
-      reset: state.reset,
-      setIsWorking: state.setIsWorking,
-    }))
-
+const BinaryTreeMenu = () => {
   const { mode, setMode } = useOperatingMode()
+  const {
+    array,
+    target,
+    isWorking,
+    isFound,
+    algorithm,
+    setArray,
+    setIsWorking,
+    setTarget,
+    nextStep,
+    reset,
+    setAlgorithm,
+  } = useBinaryTree((state) => ({
+    array: state.array,
+    target: state.target,
+    isWorking: state.isWorking,
+    isFound: state.isFound,
+    algorithm: state.algorithm,
+    setArray: state.setArray,
+    setTarget: state.setTarget,
+    nextStep: state.nextStep,
+    reset: state.reset,
+    setIsWorking: state.setIsWorking,
+    setAlgorithm: state.setAlgorithm,
+  }))
+
   const { stepTimeout, setStepTimeout } = useAutoMode({
     isFound,
     isWorking,
@@ -30,11 +41,13 @@ const BinarySearchMenu = () => {
   })
 
   const setRandomData = () => {
-    const min = 1
-    const max = 100
-    const size = 12
+    const size = 6
 
-    const rndArr = generateRandomSortedArray(size, min, max)
+    // TODO: generate random binary tree
+    const rndArr = [5, 4, 8, 11, null, 13, 4, 7, 2, null, null, null, 1].map((v) =>
+      v === null ? 'null' : v.toString(),
+    )
+
     const rndTargetFromArr = rndArr[Math.floor(Math.random() * rndArr.length)]
 
     setArray(rndArr)
@@ -43,7 +56,6 @@ const BinarySearchMenu = () => {
 
   const onChangeArray = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const arr = e.currentTarget.value.split(',')
-
     setArray(arr)
   }
 
@@ -73,7 +85,7 @@ const BinarySearchMenu = () => {
           <>
             {mode === 'steps-mode' && (
               <>
-                <Button onClick={beforeStep}>Шаг назад</Button>
+                <Button>Шаг назад</Button>
                 <Button onClick={nextStep}>Шаг вперед</Button>
               </>
             )}
@@ -82,13 +94,14 @@ const BinarySearchMenu = () => {
       </Group>
 
       <Textarea
-        label='Массив для поиска'
-        placeholder='Введите массив в формате 1,2,3,4...'
+        label='Бинарное дерево'
+        placeholder='Введите дерево в формате 5, 4, 8, 11, null, 13, 4, 7, 2, null, null, null, 1'
         disabled={isWorking}
         value={array.join(',')}
         onChange={onChangeArray}
         autosize
       />
+
       <NumberInput
         label='Число для поиска'
         placeholder='Введите число...'
@@ -97,6 +110,31 @@ const BinarySearchMenu = () => {
         onChange={(num) => setTarget(num.toString())}
         hideControls={true}
       />
+
+      <Radio.Group
+        label='Алгоритм'
+        defaultValue={algorithm.type}
+        value={algorithm.type}
+        onChange={(v) => setAlgorithm({ type: v as TreeAlgorithmType, technique: algorithm.technique })}>
+        <Stack>
+          <Radio disabled={isWorking} label='BFS' value='bfs' />
+          <Radio disabled={isWorking} label='DFS' value='dfs' />
+        </Stack>
+      </Radio.Group>
+
+      {algorithm.type === 'dfs' && (
+        <Radio.Group
+          label='Алгоритм обхода дерева'
+          defaultValue={algorithm.technique}
+          value={algorithm.technique}
+          onChange={(v) => setAlgorithm({ type: algorithm.type, technique: v as DFSTechnique })}>
+          <Stack>
+            <Radio disabled={isWorking} label='Прямой (preorder)' value='preorder' />
+            <Radio disabled={isWorking} label='Центрированный (inorder)' value='inorder' />
+            <Radio disabled={isWorking} label='Обратный (postorder)' value='postorder' />
+          </Stack>
+        </Radio.Group>
+      )}
 
       <Radio.Group label='Режим работы' defaultValue={mode} value={mode} onChange={(v) => setMode(v as Mode)}>
         <Stack>
@@ -120,4 +158,4 @@ const BinarySearchMenu = () => {
   )
 }
 
-export default BinarySearchMenu
+export default BinaryTreeMenu

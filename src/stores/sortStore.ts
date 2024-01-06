@@ -1,3 +1,4 @@
+import { validateArray } from '@/lib/validator'
 import { create } from 'zustand'
 
 export const sortAlgorithms = ['bubble-sort', 'insertion-sort', 'selection-sort', 'merge-sort', 'quick-sort'] as const
@@ -30,7 +31,6 @@ interface SortStore {
 
   nextStep: () => void
   pause: () => void
-
   reset: () => void
 }
 
@@ -49,64 +49,38 @@ export const useSortStore = create<SortStore>((set) => ({
 
   startWorking: () =>
     set((state) => {
-      // check if array is valid
-      for (const num of state.array) {
-        if (isNaN(parseInt(num))) {
-          return {}
-        }
+      const isValidArray = validateArray(state.array)
+
+      if (!isValidArray) {
+        return {}
       }
 
       // Если генератор не равен null, то значит
       // пользователь поставил на паузу сортировку и хочет продолжить
       if (state.generator != null) {
         return { isWorking: true }
-      } else {
-        let generator
-
-        switch (state.algorithm) {
-          case 'bubble-sort':
-            generator = bubbleSort(state.array)
-            break
-
-          case 'insertion-sort':
-            generator = insertionSort(state.array)
-            break
-
-          case 'merge-sort':
-            generator = mergeSort(state.array, 0, state.array.length - 1)
-            break
-
-          case 'quick-sort':
-            generator = quickSort(state.array, 0, state.array.length - 1)
-            break
-
-          case 'selection-sort':
-            generator = selectionSort(state.array)
-            break
-
-          default:
-            break
-        }
-
-        return { isWorking: true, generator }
       }
+
+      const generator = makeGenerator(state.algorithm, state.array)
+
+      return { isWorking: true, generator }
     }),
 
   setIsShowNumbers: (val) => set(() => ({ isShowNumbers: val })),
 
   nextStep: () => {
     set((state) => {
-      if (state.isWorking && state.generator) {
-        const { value, done } = state.generator.next()
-
-        if (!done) {
-          return { array: value.array, activeIndexes: value.activeIndexes }
-        } else {
-          return { isWorking: false, isSorted: true }
-        }
+      if (!state.isWorking || !state.generator) {
+        return {}
       }
 
-      return {}
+      const { value, done } = state.generator.next()
+
+      if (done) {
+        return { isWorking: false, isSorted: true }
+      }
+
+      return { array: value.array, activeIndexes: value.activeIndexes }
     })
   },
 
@@ -115,8 +89,30 @@ export const useSortStore = create<SortStore>((set) => ({
   reset: () => set(() => ({ array: [], activeIndexes: [], isWorking: false, isSorted: false, generator: null })),
 }))
 
+function makeGenerator(algo: SortAlgorithm, array: string[]) {
+  switch (algo) {
+    case 'bubble-sort':
+      return bubbleSort(array)
+
+    case 'insertion-sort':
+      return insertionSort(array)
+
+    case 'merge-sort':
+      return mergeSort(array, 0, array.length - 1)
+
+    case 'quick-sort':
+      return quickSort(array, 0, array.length - 1)
+
+    case 'selection-sort':
+      return selectionSort(array)
+
+    default:
+      return null
+  }
+}
+
 //----------------------------------------------------------------
-// SORT FUNCTIONS
+// SORT FUNCTIONS GENERATORS
 
 // Bubble sort - O(n^2)
 function* bubbleSort(array: string[]) {

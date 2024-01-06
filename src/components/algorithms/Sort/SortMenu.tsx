@@ -1,16 +1,13 @@
+import { useAutoMode } from '@/hooks/useAutoMode'
+import { Mode, useOperatingMode } from '@/hooks/useOperatingMode'
 import { generateUnsortedArray } from '@/lib/random'
 import { SortAlgorithm, useSortStore } from '@/stores/sortStore'
 import { Button, Group, NumberInput, Radio, Stack, Switch, Textarea } from '@mantine/core'
 import { useEffect, useState } from 'react'
 
-const modes = ['auto-mode', 'steps-mode'] as const
-type Mode = (typeof modes)[number]
-
 const SortMenu = () => {
-  const [mode, setMode] = useState<Mode>('auto-mode')
-  const [stepTimeout, setStepTimeout] = useState(50)
+  const { mode, setMode } = useOperatingMode()
   const [arraySize, setArraySize] = useState('50')
-
   const {
     array,
     algorithm,
@@ -38,6 +35,13 @@ const SortMenu = () => {
     reset: state.reset,
     setAlgorithm: state.setAlgorithm,
   }))
+  const { stepTimeout, setStepTimeout } = useAutoMode({
+    isFound: isSorted,
+    isWorking,
+    mode,
+    timeout: 50,
+    nextStep,
+  })
 
   const setRandomData = () => {
     const array = generateUnsortedArray(+arraySize).map((item) => item.toString())
@@ -52,24 +56,6 @@ const SortMenu = () => {
   const onStart = () => {
     startWorking()
   }
-
-  // react... but atleast it works
-  // auto-mode steps
-  useEffect(() => {
-    if (isWorking && mode === 'auto-mode') {
-      const timer = setInterval(() => {
-        nextStep()
-
-        if (isSorted) {
-          clearInterval(timer)
-        }
-      }, stepTimeout)
-
-      return () => {
-        clearInterval(timer)
-      }
-    }
-  }, [isWorking, mode, stepTimeout, nextStep, isSorted])
 
   useEffect(() => {
     setRandomData()
@@ -131,7 +117,7 @@ const SortMenu = () => {
         value={algorithm}
         onChange={(v) => setAlgorithm(v as SortAlgorithm)}>
         <Stack>
-          <Radio label='Сортировка пузырьком'  value='bubble-sort' disabled={isWorking} />
+          <Radio label='Сортировка пузырьком' value='bubble-sort' disabled={isWorking} />
           <Radio label='Сортировка вставками' value='insertion-sort' disabled={isWorking} />
           <Radio label='Сортировка выбором' value='selection-sort' disabled={isWorking} />
           <Radio label='Сортировка слиянием' value='merge-sort' disabled={isWorking} />

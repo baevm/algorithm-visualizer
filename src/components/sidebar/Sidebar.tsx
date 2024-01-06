@@ -1,9 +1,8 @@
 import { ALGORITHMS, AlgoValues } from '@/constants'
 import { ActionIcon, Box, Flex, Group, ScrollArea, Title } from '@mantine/core'
 import { TbArrowNarrowLeft } from 'react-icons/tb'
-import BFSMenu from '../algorithms/BFS/BFSMenu'
 import BinarySearchMenu from '../algorithms/BinarySearch/BinarySearchMenu'
-import DFSMenu from '../algorithms/DFS/DFSMenu'
+import BinaryTreeMenu from '../algorithms/BinaryTree/BinaryTreeMenu'
 import SortMenu from '../algorithms/Sort/SortMenu'
 import styles from './sidebar.module.css'
 
@@ -30,11 +29,8 @@ const CurrentAlgoMenu = ({
     case 'sort':
       return <SortMenu />
 
-    case 'dfs':
-      return <DFSMenu />
-
-    case 'bfs':
-      return <BFSMenu />
+    case 'binary-tree':
+      return <BinaryTreeMenu />
 
     default:
       return <AlgoList setActiveAlgo={setActiveAlgo} />
@@ -72,7 +68,11 @@ const Sidebar = ({
   return (
     <>
       <SidebarTitle activeAlgo={activeAlgo} goBack={() => setActiveAlgo(null)} />
-      <Flex direction='column' my='md' renderRoot={(props) => <ScrollArea {...props} offsetScrollbars={true} type='auto' />} style={{ flex: '1' }}>
+      <Flex
+        direction='column'
+        my='md'
+        renderRoot={(props) => <ScrollArea {...props} offsetScrollbars={true} type='auto' />}
+        style={{ flex: '1' }}>
         <CurrentAlgoMenu activeAlgo={activeAlgo} setActiveAlgo={setActiveAlgo} />
       </Flex>
       {/* <div>TODO Футер...</div> */}

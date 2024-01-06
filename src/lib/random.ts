@@ -30,3 +30,5 @@ function shuffleArray(array: number[]) {
     ;[array[i], array[j]] = [array[j], array[i]]
   }
 }
+
+export function generateRandomBinaryTreeArray(depth: number, maxValue = 20) {}
