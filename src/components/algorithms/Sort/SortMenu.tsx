@@ -53,10 +53,6 @@ const SortMenu = () => {
     setArray(arr)
   }
 
-  const onStart = () => {
-    startWorking()
-  }
-
   useEffect(() => {
     setRandomData()
 
@@ -73,7 +69,7 @@ const SortMenu = () => {
       </Group>
 
       <Group justify='space-between' grow>
-        {!isWorking && <Button onClick={onStart}>Запуск</Button>}
+        {!isWorking && <Button onClick={startWorking}>Запуск</Button>}
 
         {isWorking && mode === 'steps-mode' && (
           <>

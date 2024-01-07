@@ -13,7 +13,13 @@ const SortVisualizer = () => {
 
   return (
     <Flex align='center' justify='center' h='100%' w='100%'>
-      <Group align='flex-end' wrap='nowrap' w='100%' h='50%' gap='1px' style={{ overflowX: 'auto', overflowY: 'hidden' }}>
+      <Group
+        align='flex-end'
+        wrap='nowrap'
+        w='100%'
+        h='50%'
+        gap='1px'
+        style={{ overflowX: 'auto', overflowY: 'hidden' }}>
         {array.map((item, index) => (
           <Box
             key={index}

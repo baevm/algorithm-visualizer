@@ -10,8 +10,11 @@ https://algorithm-visualizer-phi.vercel.app/
   - [x] Сортировка выбором
   - [x] Сортировка слиянием
   - [x] Быстрая сортировка
-- [ ] BFS
-- [ ] DFS
+- [x] BFS
+- [x] DFS:
+  - [x] Preorder
+  - [x] Inorder
+  - [x] Postorder 
 
 ```bash
 # Install dependencies

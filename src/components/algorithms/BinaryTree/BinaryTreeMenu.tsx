@@ -13,7 +13,7 @@ const BinaryTreeMenu = () => {
     isFound,
     algorithm,
     setArray,
-    setIsWorking,
+    startWorking,
     setTarget,
     nextStep,
     reset,
@@ -28,7 +28,7 @@ const BinaryTreeMenu = () => {
     setTarget: state.setTarget,
     nextStep: state.nextStep,
     reset: state.reset,
-    setIsWorking: state.setIsWorking,
+    startWorking: state.startWorking,
     setAlgorithm: state.setAlgorithm,
   }))
 
@@ -36,7 +36,7 @@ const BinaryTreeMenu = () => {
     isFound,
     isWorking,
     mode,
-    timeout: 50,
+    timeout: 1000,
     nextStep,
   })
 
@@ -44,7 +44,7 @@ const BinaryTreeMenu = () => {
     const size = 6
 
     // TODO: generate random binary tree
-    const rndArr = [5, 4, 8, 11, null, 13, 4, 7, 2, null, null, null, 1].map((v) =>
+    const rndArr = [5, 3, 8, 11, null, 13, 4, 7, 2, null, null, null, null, 1].map((v) =>
       v === null ? 'null' : v.toString(),
     )
 
@@ -59,10 +59,6 @@ const BinaryTreeMenu = () => {
     setArray(arr)
   }
 
-  const onStart = () => {
-    setIsWorking()
-  }
-
   useEffect(() => {
     setRandomData()
 
@@ -74,13 +70,15 @@ const BinaryTreeMenu = () => {
   return (
     <Stack>
       <Group justify='space-between' grow>
-        <Button onClick={setRandomData}>Рандом</Button>
+        <Button onClick={setRandomData} disabled>
+          Рандом
+        </Button>
         <Button onClick={reset}>Сбросить</Button>
       </Group>
 
       <Group justify='space-between' grow>
         {!isWorking ? (
-          <Button onClick={onStart}>Запуск</Button>
+          <Button onClick={startWorking}>Запуск</Button>
         ) : (
           <>
             {mode === 'steps-mode' && (
@@ -95,8 +93,8 @@ const BinaryTreeMenu = () => {
 
       <Textarea
         label='Бинарное дерево'
-        placeholder='Введите дерево в формате 5, 4, 8, 11, null, 13, 4, 7, 2, null, null, null, 1'
-        disabled={isWorking}
+        placeholder='Введите дерево в формате 5, 4, 8, 11, null, 13, 4, 7, 2, null, null, null, null, 1'
+        disabled
         value={array.join(',')}
         onChange={onChangeArray}
         autosize

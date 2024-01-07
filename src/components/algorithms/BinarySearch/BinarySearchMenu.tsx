@@ -47,10 +47,6 @@ const BinarySearchMenu = () => {
     setArray(arr)
   }
 
-  const onStart = () => {
-    setIsWorking()
-  }
-
   useEffect(() => {
     setRandomData()
 
@@ -68,7 +64,7 @@ const BinarySearchMenu = () => {
 
       <Group justify='space-between' grow>
         {!isWorking ? (
-          <Button onClick={onStart}>Запуск</Button>
+          <Button onClick={setIsWorking}>Запуск</Button>
         ) : (
           <>
             {mode === 'steps-mode' && (
