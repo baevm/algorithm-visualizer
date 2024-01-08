@@ -1,4 +1,4 @@
-import { TbBinaryTree, TbListSearch, TbSortAscendingNumbers } from 'react-icons/tb'
+import { TbBinaryTree, TbListSearch, TbSortAscendingNumbers, TbBrandGraphql } from 'react-icons/tb'
 
 export const ALGORITHMS = [
   {
@@ -15,6 +15,11 @@ export const ALGORITHMS = [
     title: 'Бинарное дерево',
     icon: <TbBinaryTree />,
     value: 'binary-tree',
+  },
+  {
+    title: 'Алгоритм Дейкстры',
+    icon: <TbBrandGraphql />,
+    value: 'dijkstra',
   },
 ] as const
 

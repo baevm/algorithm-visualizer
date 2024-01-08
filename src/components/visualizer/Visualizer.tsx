@@ -1,6 +1,7 @@
 import { AlgoValues } from '@/constants'
 import BinarySearchVisualizer from '../algorithms/BinarySearch/BinarySearchVisualizer'
 import BinaryTreeVisualizer from '../algorithms/BinaryTree/BinaryTreeVisualizer'
+import DijkstraVisualizer from '../algorithms/Dijkstra/DijkstraVisualizer'
 import SortVisualizer from '../algorithms/Sort/SortVisualizer'
 
 const Visualizer = ({ activeAlgo }: { activeAlgo: AlgoValues | null }) => {
@@ -13,6 +14,9 @@ const Visualizer = ({ activeAlgo }: { activeAlgo: AlgoValues | null }) => {
 
     case 'binary-tree':
       return <BinaryTreeVisualizer />
+
+    case 'dijkstra':
+      return <DijkstraVisualizer />
 
     default:
       break

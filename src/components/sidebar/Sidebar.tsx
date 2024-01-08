@@ -1,41 +1,7 @@
 import { ALGORITHMS, AlgoValues } from '@/constants'
 import { ActionIcon, Box, Flex, Group, ScrollArea, Title } from '@mantine/core'
 import { TbArrowNarrowLeft } from 'react-icons/tb'
-import BinarySearchMenu from '../algorithms/BinarySearch/BinarySearchMenu'
-import BinaryTreeMenu from '../algorithms/BinaryTree/BinaryTreeMenu'
-import SortMenu from '../algorithms/Sort/SortMenu'
-import styles from './sidebar.module.css'
-
-const AlgoList = ({ setActiveAlgo }: { setActiveAlgo: (name: AlgoValues) => void }) => {
-  return ALGORITHMS.map((algo) => (
-    <Group key={algo.value} mt='sm' p='sm' onClick={() => setActiveAlgo(algo.value)} className={styles.sidebar_item}>
-      {algo.icon}
-      {algo.title}
-    </Group>
-  ))
-}
-
-const CurrentAlgoMenu = ({
-  activeAlgo,
-  setActiveAlgo,
-}: {
-  activeAlgo: AlgoValues | null
-  setActiveAlgo: (name: AlgoValues) => void
-}) => {
-  switch (activeAlgo) {
-    case 'binary-search':
-      return <BinarySearchMenu />
-
-    case 'sort':
-      return <SortMenu />
-
-    case 'binary-tree':
-      return <BinaryTreeMenu />
-
-    default:
-      return <AlgoList setActiveAlgo={setActiveAlgo} />
-  }
-}
+import CurrentAlgoMenu from './Menu'
 
 const SidebarTitle = ({ activeAlgo, goBack }: { activeAlgo: AlgoValues | null; goBack: () => void }) => {
   if (activeAlgo === null) {
