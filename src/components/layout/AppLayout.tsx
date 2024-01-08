@@ -1,14 +1,10 @@
-import { AlgoValues } from '@/constants'
 import { AppShell } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
-import { useState } from 'react'
 import Header from '../header/Header'
 import Sidebar from '../sidebar/Sidebar'
-import Visualizer from '../visualizer/Visualizer'
 
-const AppLayout = () => {
+const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const [opened, { toggle }] = useDisclosure()
-  const [activeAlgo, setActiveAlgo] = useState<AlgoValues | null>(null)
 
   return (
     <AppShell
@@ -23,10 +19,10 @@ const AppLayout = () => {
         <Header opened={opened} toggle={toggle} />
       </AppShell.Header>
       <AppShell.Navbar p='md'>
-        <Sidebar activeAlgo={activeAlgo} setActiveAlgo={setActiveAlgo} />
+        <Sidebar />
       </AppShell.Navbar>
       <AppShell.Main h='1px' w='100%'>
-        <Visualizer activeAlgo={activeAlgo} />
+        {children}
       </AppShell.Main>
     </AppShell>
   )

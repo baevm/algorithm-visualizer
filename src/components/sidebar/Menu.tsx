@@ -1,42 +1,48 @@
-import { ALGORITHMS, AlgoValues } from '@/constants'
-import { Group } from '@mantine/core'
+import { ALGORITHMS } from '@/constants'
+import { Button } from '@mantine/core'
+import { useLocation, useNavigate } from 'react-router-dom'
 import BinarySearchMenu from '../algorithms/BinarySearch/BinarySearchMenu'
 import BinaryTreeMenu from '../algorithms/BinaryTree/BinaryTreeMenu'
 import DijkstraMenu from '../algorithms/Dijkstra/DijkstraMenu'
 import SortMenu from '../algorithms/Sort/SortMenu'
-import styles from './sidebar.module.css'
+import classes from './sidebar.module.css'
 
-const AlgoList = ({ setActiveAlgo }: { setActiveAlgo: (name: AlgoValues) => void }) => {
+const AlgoList = () => {
+  const navigate = useNavigate()
+
   return ALGORITHMS.map((algo) => (
-    <Group key={algo.value} mt='sm' p='sm' onClick={() => setActiveAlgo(algo.value)} className={styles.sidebar_item}>
-      {algo.icon}
+    <Button
+      variant='outline'
+      key={algo.value}
+      size='md'
+      mt='sm'
+      fullWidth
+      onClick={() => navigate(algo.value)}
+      classNames={classes}
+      leftSection={algo.icon}>
       {algo.title}
-    </Group>
+    </Button>
   ))
 }
 
-const CurrentAlgoMenu = ({
-  activeAlgo,
-  setActiveAlgo,
-}: {
-  activeAlgo: AlgoValues | null
-  setActiveAlgo: (name: AlgoValues) => void
-}) => {
-  switch (activeAlgo) {
-    case 'binary-search':
+const CurrentAlgoMenu = () => {
+  const algoRoute = useLocation().pathname
+
+  switch (algoRoute) {
+    case '/binary-search':
       return <BinarySearchMenu />
 
-    case 'sort':
+    case '/sort':
       return <SortMenu />
 
-    case 'binary-tree':
+    case '/binary-tree':
       return <BinaryTreeMenu />
 
-    case 'dijkstra':
+    case '/dijkstra':
       return <DijkstraMenu />
 
     default:
-      return <AlgoList setActiveAlgo={setActiveAlgo} />
+      return <AlgoList />
   }
 }
 

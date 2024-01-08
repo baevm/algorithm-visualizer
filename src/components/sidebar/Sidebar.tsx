@@ -1,10 +1,15 @@
-import { ALGORITHMS, AlgoValues } from '@/constants'
+import { ALGORITHMS } from '@/constants'
 import { ActionIcon, Box, Flex, Group, ScrollArea, Title } from '@mantine/core'
 import { TbArrowNarrowLeft } from 'react-icons/tb'
+import { useLocation, useNavigate } from 'react-router-dom'
 import CurrentAlgoMenu from './Menu'
 
-const SidebarTitle = ({ activeAlgo, goBack }: { activeAlgo: AlgoValues | null; goBack: () => void }) => {
-  if (activeAlgo === null) {
+const SidebarTitle = () => {
+  const navigate = useNavigate()
+  const algoRoute = useLocation().pathname.split('/')[1]
+  const currentAlgo = ALGORITHMS.find((a) => a.value === algoRoute)
+
+  if (!currentAlgo) {
     return (
       <Box>
         <Title order={3}>Алгоритмы</Title>
@@ -12,7 +17,11 @@ const SidebarTitle = ({ activeAlgo, goBack }: { activeAlgo: AlgoValues | null; g
     )
   }
 
-  const title = ALGORITHMS.find((a) => a.value === activeAlgo)!.title
+  function goBack() {
+    navigate('/')
+  }
+
+  const title = currentAlgo.title
 
   return (
     <Group>
@@ -24,22 +33,16 @@ const SidebarTitle = ({ activeAlgo, goBack }: { activeAlgo: AlgoValues | null; g
   )
 }
 
-const Sidebar = ({
-  activeAlgo,
-  setActiveAlgo,
-}: {
-  activeAlgo: AlgoValues | null
-  setActiveAlgo: (v: AlgoValues | null) => void
-}) => {
+const Sidebar = () => {
   return (
     <>
-      <SidebarTitle activeAlgo={activeAlgo} goBack={() => setActiveAlgo(null)} />
+      <SidebarTitle />
       <Flex
         direction='column'
         my='md'
         renderRoot={(props) => <ScrollArea {...props} offsetScrollbars={true} type='auto' />}
         style={{ flex: '1' }}>
-        <CurrentAlgoMenu activeAlgo={activeAlgo} setActiveAlgo={setActiveAlgo} />
+        <CurrentAlgoMenu />
       </Flex>
       {/* <div>TODO Футер...</div> */}
     </>
