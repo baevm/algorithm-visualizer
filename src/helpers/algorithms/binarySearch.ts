@@ -1,23 +1,3 @@
-type HistoryStep = {
-  left: number
-  right: number
-  mid: number
-  isFound: boolean
-  isNotExist: boolean
-}
-
-export type BinarySearchGenerator = Generator<
-  {
-    left: number
-    right: number
-    mid: number
-    history: HistoryStep[]
-    isFound: boolean
-  },
-  void,
-  unknown
->
-
 export class BinarySearch {
   private array: string[]
   private target: string
@@ -63,3 +43,23 @@ export class BinarySearch {
     return
   }
 }
+
+type HistoryStep = {
+  left: number
+  right: number
+  mid: number
+  isFound: boolean
+  isNotExist: boolean
+}
+
+export type BinarySearchGenerator = Generator<
+  {
+    left: number
+    right: number
+    mid: number
+    history: HistoryStep[]
+    isFound: boolean
+  },
+  void,
+  unknown
+>

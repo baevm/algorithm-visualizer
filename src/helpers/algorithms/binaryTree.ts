@@ -1,20 +1,3 @@
-export type TreeAlgorithmType = (typeof BinaryTree.treeAlgorithms)[number]
-export type DFSTechnique = (typeof BinaryTree.dfsTechniques)[number]
-
-export type BinaryTreeAlgortihm = {
-  type: TreeAlgorithmType
-  technique: DFSTechnique
-}
-
-export type TreeGenerator = Generator<
-  {
-    isFound: boolean
-    target: string | undefined
-  },
-  void,
-  unknown
->
-
 export class TreeNode {
   value: any
   left: TreeNode | null
@@ -181,3 +164,20 @@ export class BinaryTree {
     return root
   }
 }
+
+export type TreeAlgorithmType = (typeof BinaryTree.treeAlgorithms)[number]
+export type DFSTechnique = (typeof BinaryTree.dfsTechniques)[number]
+
+export type BinaryTreeAlgortihm = {
+  type: TreeAlgorithmType
+  technique: DFSTechnique
+}
+
+export type TreeGenerator = Generator<
+  {
+    isFound: boolean
+    target: string | undefined
+  },
+  void,
+  unknown
+>

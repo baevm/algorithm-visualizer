@@ -1,28 +1,19 @@
+import { DijkstraGenerator } from '@/helpers/algorithms/dijkstra'
+import { GraphEdge, GraphNode } from 'reagraph'
 import { create } from 'zustand'
 
-type GNode = {
-  id: string
-  label: string
-}
-
-type GEdge = {
-  id: string
-  source: string
-  target: string
-  label: string
-}
-
 interface DijkstraStore {
-  nodes: GNode[]
-  edges: GEdge[]
+  nodes: GraphNode[]
+  edges: GraphEdge[]
   source: string
   target: string
 
   isWorking: boolean
   isFound: boolean
+  generator: DijkstraGenerator | null
 
-  setNodes(nodes: GNode[]): void
-  setEdges(edges: GEdge[]): void
+  setNodes(nodes: GraphNode[]): void
+  setEdges(edges: GraphEdge[]): void
   setSource(source: string): void
   setTarget(target: string): void
 
@@ -39,14 +30,44 @@ export const useDijkstraStore = create<DijkstraStore>((set) => ({
   target: '',
   isWorking: false,
   isFound: false,
+  generator: null,
 
-  setNodes: (nodes) => set({ nodes }),
-  setEdges: (edges) => set({ edges }),
+  setNodes: (nodes) =>
+    set(() => {
+      return { nodes }
+    }),
+  setEdges: (edges) =>
+    set(() => {
+      return { edges }
+    }),
   setSource: (source) => set({ source }),
   setTarget: (target) => set({ target }),
 
-  startWorking: () => set({ isWorking: true }),
-  nextStep: () => set({ isWorking: true }),
+  startWorking: () =>
+    set((state) => {
+      const generator = DijkstraMinDistance(state.nodes, state.edges, +state.source, +state.target)
+
+      return { isWorking: true, generator }
+    }),
+
+  nextStep: () =>
+    set((state) => {
+      if (!state.isWorking || !state.generator) {
+        return {}
+      }
+
+      const { value, done } = state.generator.next()
+
+      if (done) {
+        return { isWorking: false, isSorted: true }
+      }
+
+      console.log({ value })
+
+      return { isWorking: true }
+    }),
   reset: () => set({ isWorking: false }),
   pause: () => set({ isWorking: false }),
 }))
+
+function* DijkstraMinDistance(nodes: GraphNode[], edges: GraphEdge[], source: number, target: number) {}

@@ -1,63 +1,8 @@
+import { useDijkstraStore } from '@/stores/dijkstraStore'
 import { ActionIcon, Flex, Stack } from '@mantine/core'
 import { useRef } from 'react'
 import { TbFocusCentered, TbZoomIn, TbZoomOut } from 'react-icons/tb'
 import { GraphCanvas, GraphCanvasRef } from 'reagraph'
-
-const nodes = [
-  {
-    id: 'n-0',
-    label: '0',
-  },
-  {
-    id: 'n-1',
-    label: '1',
-  },
-  {
-    id: 'n-2',
-    label: '2',
-  },
-  {
-    id: 'n-3',
-    label: '3',
-  },
-  {
-    id: 'n-4',
-    label: '4',
-  },
-]
-
-const edges = [
-  {
-    id: '0->1',
-    source: 'n-0',
-    target: 'n-1',
-    label: 'Edge 0-1',
-  },
-  {
-    id: '0->2',
-    source: 'n-0',
-    target: 'n-2',
-    label: 'Edge 0-2',
-  },
-  {
-    id: '0->3',
-    source: 'n-0',
-    target: 'n-3',
-    label: 'Edge 0-3',
-  },
-  {
-    id: '0->4',
-    source: 'n-0',
-    target: 'n-4',
-    label: 'Edge 0-4',
-  },
-  {
-    id: '3->2',
-    source: 'n-3',
-    target: 'n-2',
-    label: 'Edge 0-4',
-  },
-]
 
 const actives = ['n-4']
 
@@ -120,6 +65,10 @@ const theme = {
 }
 
 const DijkstraVisualizer = () => {
+  const { edges, nodes } = useDijkstraStore((state) => ({
+    nodes: state.nodes,
+    edges: state.edges,
+  }))
   const canvasRef = useRef<GraphCanvasRef | null>(null)
 
   return (
@@ -135,7 +84,16 @@ const DijkstraVisualizer = () => {
           <TbZoomOut color='white' />
         </ActionIcon>
       </Stack>
-      <GraphCanvas nodes={nodes} edges={edges} actives={actives} theme={theme} ref={canvasRef} draggable={false} />
+      <GraphCanvas
+        nodes={nodes}
+        edges={edges}
+        actives={actives}
+        theme={theme}
+        ref={canvasRef}
+        labelType='all'
+        edgeLabelPosition='above'
+        draggable={false}
+      />
     </Flex>
   )
 }

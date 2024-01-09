@@ -1,14 +1,3 @@
-export type SortGenerator = Generator<
-  {
-    array: string[]
-    activeIndexes: number[]
-  },
-  void,
-  unknown
->
-
-export type SortAlgorithm = (typeof Sort.sortAlgorithms)[number]
-
 export class Sort {
   private array: string[]
   private algorithm: SortAlgorithm
@@ -242,3 +231,14 @@ export class Sort {
     return i
   }
 }
+
+export type SortGenerator = Generator<
+  {
+    array: string[]
+    activeIndexes: number[]
+  },
+  void,
+  unknown
+>
+
+export type SortAlgorithm = (typeof Sort.sortAlgorithms)[number]
