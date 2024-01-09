@@ -1,22 +1,5 @@
-import { TreeNode, arrayToTree } from '@/helpers/binaryTree'
+import { BinaryTree, BinaryTreeAlgortihm, TreeGenerator } from '@/helpers/algorithms/binaryTree'
 import { create } from 'zustand'
-
-export type TreeAlgorithmType = 'bfs' | 'dfs'
-export type DFSTechnique = 'preorder' | 'inorder' | 'postorder'
-
-type BinaryTreeAlgortihm = {
-  type: TreeAlgorithmType
-  technique: DFSTechnique
-}
-
-type TreeGenerator = Generator<
-  {
-    isFound: boolean
-    target: string | undefined
-  },
-  void,
-  unknown
->
 
 interface BinaryTreeStore {
   array: (string | 'null')[]
@@ -59,7 +42,8 @@ export const useBinaryTree = create<BinaryTreeStore>((set) => ({
         return { isWorking: true }
       }
 
-      const generator = makeGenerator(state.algorithm, state.array, state.target)
+      const binaryTreer = new BinaryTree(state.algorithm, state.array, state.target)
+      const generator = binaryTreer.makeGenerator()
 
       return { isWorking: !state.isWorking, generator }
     }),
@@ -81,114 +65,3 @@ export const useBinaryTree = create<BinaryTreeStore>((set) => ({
 
   reset: () => set({ isWorking: false, isFound: false, currentNode: null, generator: null }),
 }))
-
-function makeGenerator(algorithm: BinaryTreeAlgortihm, array: (string | 'null')[], target: any): TreeGenerator | null {
-  switch (algorithm.type) {
-    case 'bfs':
-      return bfsGenerator(array, target)
-
-    case 'dfs':
-      return dfsGenerator(array, target, algorithm.technique)
-
-    default:
-      return null
-  }
-}
-
-function* bfsGenerator(array: (string | 'null')[], target: string) {
-  const queue: (string | 'null')[] = [...array]
-
-  while (queue.length > 0) {
-    const current = queue.shift()
-
-    if (current !== 'null') {
-      yield { isFound: false, target: current }
-    }
-
-    if (current === target) {
-      yield { isFound: true, target: current }
-      return
-    }
-
-    const left = array[2 * queue.length + 1]
-    const right = array[2 * queue.length + 2]
-
-    if (left !== 'null') {
-      queue.push(left)
-    }
-
-    if (right !== 'null') {
-      queue.push(right)
-    }
-  }
-}
-
-function* dfsGenerator(array: (string | 'null')[], target: string, algoTechnique: DFSTechnique) {
-  const root = arrayToTree(array)
-
-  switch (algoTechnique) {
-    case 'preorder':
-      for (const { isFound, current } of dfsPreorder(root, target)) {
-        yield { isFound, target: current }
-
-        if (isFound) {
-          return
-        }
-      }
-      break
-
-    case 'inorder':
-      for (const { isFound, current } of dfsInorder(root, target)) {
-        yield { isFound, target: current }
-
-        if (isFound) {
-          return
-        }
-      }
-      break
-
-    case 'postorder':
-      for (const { isFound, current } of dfsPostorder(root, target)) {
-        yield { isFound, target: current }
-
-        if (isFound) {
-          return
-        }
-      }
-      break
-
-    default:
-      break
-  }
-}
-
-function* dfsPreorder(root: TreeNode | null, target: string): any {
-  if (!root) return
-
-  yield { isFound: root.value === target, current: root.value }
-
-  if (root.left && root.left.value !== 'null') yield* dfsPreorder(root.left, target)
-
-  if (root.right && root.right.value !== 'null') yield* dfsPreorder(root.right, target)
-}
-
-function* dfsInorder(root: TreeNode | null, target: string): any {
-  if (!root) return
-
-  if (root.left && root.left.value !== 'null') yield* dfsInorder(root.left, target)
-
-  yield { isFound: root.value === target, current: root.value }
-
-  if (root.right && root.right.value !== 'null') yield* dfsInorder(root.right, target)
-}
-
-function* dfsPostorder(root: TreeNode | null, target: string): any {
-  if (!root) return
-
-  if (root.left && root.left.value !== 'null') yield* dfsPostorder(root.left, target)
-
-  if (root.right && root.right.value !== 'null') yield* dfsPostorder(root.right, target)
-
-  yield { isFound: root.value === target, current: root.value }
-}
-

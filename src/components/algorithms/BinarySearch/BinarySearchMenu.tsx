@@ -69,7 +69,9 @@ const BinarySearchMenu = () => {
           <>
             {mode === 'steps-mode' && (
               <>
-                <Button onClick={beforeStep}>Шаг назад</Button>
+                <Button onClick={beforeStep} disabled>
+                  Шаг назад
+                </Button>
                 <Button onClick={nextStep}>Шаг вперед</Button>
               </>
             )}

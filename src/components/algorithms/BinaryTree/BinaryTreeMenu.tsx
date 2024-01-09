@@ -1,6 +1,7 @@
+import { DFSTechnique, TreeAlgorithmType } from '@/helpers/algorithms/binaryTree'
 import { useAutoMode } from '@/hooks/useAutoMode'
 import { Mode, useOperatingMode } from '@/hooks/useOperatingMode'
-import { DFSTechnique, TreeAlgorithmType, useBinaryTree } from '@/stores/binaryTreeStore'
+import { useBinaryTree } from '@/stores/binaryTreeStore'
 import { Button, Group, NumberInput, Radio, Stack, Textarea } from '@mantine/core'
 import { useEffect } from 'react'
 
@@ -83,7 +84,7 @@ const BinaryTreeMenu = () => {
           <>
             {mode === 'steps-mode' && (
               <>
-                <Button>Шаг назад</Button>
+                <Button disabled>Шаг назад</Button>
                 <Button onClick={nextStep}>Шаг вперед</Button>
               </>
             )}

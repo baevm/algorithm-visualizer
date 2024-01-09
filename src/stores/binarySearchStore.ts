@@ -1,3 +1,4 @@
+import { BinarySearch } from '@/helpers/algorithms/binarySearch'
 import { validateArray } from '@/lib/validator'
 import { create } from 'zustand'
 
@@ -8,6 +9,18 @@ type HistoryStep = {
   isFound: boolean
   isNotExist: boolean
 }
+
+type BinarySearchGenerator = Generator<
+  {
+    left: number
+    right: number
+    mid: number
+    history: HistoryStep[]
+    isFound: boolean
+  },
+  void,
+  unknown
+>
 
 interface BinarySearchStore {
   array: string[]
@@ -20,6 +33,8 @@ interface BinarySearchStore {
   isWorking: boolean
   isFound: boolean
   isNotExist: boolean
+
+  generator: BinarySearchGenerator | null
 
   history: HistoryStep[]
   step: number
@@ -42,6 +57,7 @@ export const useBinarySearch = create<BinarySearchStore>((set) => ({
   isWorking: false,
   isFound: false,
   isNotExist: false,
+  generator: null,
   history: [],
   step: 0,
 
@@ -61,54 +77,38 @@ export const useBinarySearch = create<BinarySearchStore>((set) => ({
     set((state) => {
       const isValidArray = validateArray(state.array)
 
-      if (!isValidArray) {
+      if (!isValidArray || state.target == null) {
         return {}
       }
 
-      return { isWorking: !state.isWorking }
+      if (state.generator != null) {
+        return { isWorking: false }
+      }
+
+      const searcher = new BinarySearch(state.array, state.target)
+      const generator = searcher.makeGenerator()
+
+      return { isWorking: true, generator }
     }),
 
   // FIXME: refactor binary search to use generators
   nextStep: () =>
     set((state) => {
-      const { array, target, left, right, mid, history, step } = state
-
-      if (!target || isNaN(parseInt(target)) || array.length === 0) {
+      if (!state.isWorking || !state.generator) {
         return {}
       }
 
-      // Array contains string, first convert to number
-      // Same with target
-      const midValue = parseInt(array[mid])
-      const targetValue = parseInt(target)
+      const { value, done } = state.generator.next()
 
-      if (midValue === targetValue) {
-        return { isFound: true, isWorking: false }
+      if (done) {
+        return { isWorking: false, isFound: false, isNotExist: true }
       }
 
-      if (left >= right) {
-        return { isNotExist: true }
+      if (value.isFound) {
+        return { isWorking: false, isFound: true }
       }
 
-      if (midValue < targetValue) {
-        const newLeft = mid + 1
-        const newMid = Math.floor((newLeft + right) / 2)
-
-        history.push({ left: newLeft, right, mid: newMid, isFound: false, isNotExist: false })
-
-        return { left: newLeft, mid: newMid, history, step: step + 1 }
-      }
-
-      if (midValue > targetValue) {
-        const newRight = mid - 1
-        const newMid = Math.floor((left + newRight) / 2)
-
-        history.push({ left, right: newRight, mid: newMid, isFound: false, isNotExist: false })
-
-        return { right: newRight, mid: newMid, history, step: step + 1 }
-      }
-
-      return {}
+      return { left: value.left, right: value.right, mid: value.mid, history: value.history, step: state.step + 1 }
     }),
 
   beforeStep: () =>
@@ -120,6 +120,10 @@ export const useBinarySearch = create<BinarySearchStore>((set) => ({
       }
 
       const newStep = step - 1
+
+      if (newStep >= history.length) {
+        return {}
+      }
 
       const { left, right, mid, isFound, isNotExist } = history[newStep]
 
@@ -144,6 +148,16 @@ export const useBinarySearch = create<BinarySearchStore>((set) => ({
 
       const history = [{ left, right, mid, isFound: false, isNotExist: false }]
 
-      return { left, right, mid, isFound: false, isWorking: false, isNotExist: false, history, step: 0 }
+      return {
+        left,
+        right,
+        mid,
+        isFound: false,
+        isWorking: false,
+        isNotExist: false,
+        history,
+        step: 0,
+        generator: null,
+      }
     }),
 }))

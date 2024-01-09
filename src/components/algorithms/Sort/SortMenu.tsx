@@ -1,7 +1,8 @@
+import { SortAlgorithm } from '@/helpers/algorithms/sort'
 import { useAutoMode } from '@/hooks/useAutoMode'
 import { Mode, useOperatingMode } from '@/hooks/useOperatingMode'
 import { generateUnsortedArray } from '@/lib/random'
-import { SortAlgorithm, useSortStore } from '@/stores/sortStore'
+import { useSortStore } from '@/stores/sortStore'
 import { Button, Group, NumberInput, Radio, Stack, Switch, Textarea } from '@mantine/core'
 import { useEffect, useState } from 'react'
 
