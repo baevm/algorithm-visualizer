@@ -1,116 +1,16 @@
+import { Dijkstra, defaultEdges, defaultNodes } from '@/helpers/algorithms/dijkstra'
 import { useAutoMode } from '@/hooks/useAutoMode'
 import { Mode, useOperatingMode } from '@/hooks/useOperatingMode'
 import { useDijkstraStore } from '@/stores/dijkstraStore'
 import { Button, Group, NumberInput, Radio, Stack, TextInput, Textarea } from '@mantine/core'
 import { useEffect, useState } from 'react'
-import { GraphEdge, GraphNode } from 'reagraph'
-
-const defaultNodes: GraphNode[] = [
-  {
-    id: 'n-0',
-    label: '0',
-  },
-  {
-    id: 'n-1',
-    label: '1',
-  },
-  {
-    id: 'n-2',
-    label: '2',
-  },
-  {
-    id: 'n-3',
-    label: '3',
-  },
-  {
-    id: 'n-4',
-    label: '4',
-  },
-]
-
-const defaultEdges: GraphEdge[] = [
-  {
-    id: '0->1',
-    source: 'n-0',
-    target: 'n-1',
-    label: '',
-  },
-  {
-    id: '0->2',
-    source: 'n-0',
-    target: 'n-2',
-    label: '',
-  },
-  {
-    id: '0->3',
-    source: 'n-0',
-    target: 'n-3',
-    label: '',
-  },
-  {
-    id: '0->4',
-    source: 'n-0',
-    target: 'n-4',
-    label: '',
-  },
-  {
-    id: '3->2',
-    source: 'n-3',
-    target: 'n-2',
-    label: '',
-  },
-]
-
-function formatEdgesToText(edges: GraphEdge[]) {
-  return edges.map((edge) => `${edge.source[2]}->${edge.target[2]}`).join('\n')
-}
-
-function formatTextToEdges(text: string) {
-  return text.split('\n').map((line) => {
-    const [source, target] = line.split('->')
-
-    const edge: GraphEdge = {
-      id: `${source}->${target}`,
-      source: `n-${source}`,
-      target: `n-${target}`,
-      label: '',
-    }
-
-    return edge
-  })
-}
-
-function getNodesFromEdges(edges: GraphEdge[]) {
-  return edges.reduce((acc, edge) => {
-    const node: GraphNode = {
-      id: edge.source,
-      label: edge.source[2],
-    }
-
-    if (!acc.find((n) => n.id === node.id)) {
-      acc.push(node)
-    }
-
-    const node2: GraphNode = {
-      id: edge.target,
-      label: edge.target[2],
-    }
-
-    if (!acc.find((n) => n.id === node2.id)) {
-      acc.push(node2)
-    }
-
-    return acc
-  }, [] as GraphNode[])
-}
 
 const DijkstraMenu = () => {
-  const [textAreaEdges, setTextAreaEdges] = useState(formatEdgesToText(defaultEdges))
+  const [textAreaEdges, setTextAreaEdges] = useState(Dijkstra.formatEdgesToText(defaultEdges))
+  const [sourceTarget, setSourceTarget] = useState<{ source: string; target: string }>({ source: '0', target: '6' })
   const { mode, setMode } = useOperatingMode()
-  const { edges, nodes, isWorking, isFound, startWorking, nextStep, reset, pause, setEdges, setNodes } =
+  const { isWorking, isFound, startWorking, setSource, setTarget, nextStep, reset, pause, setEdges, setNodes } =
     useDijkstraStore((state) => ({
-      edges: state.edges,
-      nodes: state.nodes,
       isWorking: state.isWorking,
       isFound: state.isFound,
       pause: state.pause,
@@ -119,6 +19,8 @@ const DijkstraMenu = () => {
       reset: state.reset,
       setNodes: state.setNodes,
       setEdges: state.setEdges,
+      setSource: state.setSource,
+      setTarget: state.setTarget,
     }))
 
   const { stepTimeout, setStepTimeout } = useAutoMode({
@@ -134,22 +36,25 @@ const DijkstraMenu = () => {
     setEdges(defaultEdges)
   }
 
-  const onChangeArray = () => {
+  const onSave = () => {
     const text = textAreaEdges.trim()
 
-    if (!text) {
+    if (!text || !sourceTarget.source || !sourceTarget.target) {
       setEdges([])
       setNodes([])
       return
     }
 
-    const edges = formatTextToEdges(text)
-    const nodes = getNodesFromEdges(edges)
+    const edges = Dijkstra.formatTextToEdges(text)
+    const nodes = Dijkstra.getNodesFromEdges(edges)
 
-    console.log({ edges, nodes })
+    const formattedTarget = 'n-' + sourceTarget.target
+    const formattedSource = 'n-' + sourceTarget.source
 
     setEdges(edges)
     setNodes(nodes)
+    setSource(formattedSource)
+    setTarget(formattedTarget)
   }
 
   useEffect(() => {
@@ -186,10 +91,22 @@ const DijkstraMenu = () => {
         disabled={isWorking}
         minRows={6}
       />
-      <Button onClick={onChangeArray}>Сохранить</Button>
+      <TextInput
+        label='Начальная вершина'
+        onChange={(e) => setSourceTarget((prev) => ({ ...prev, source: e.target.value }))}
+        value={sourceTarget.source}
+        disabled={isWorking}
+        placeholder='Введите начальную вершину...'
+      />
+      <TextInput
+        label='Конечная вершина'
+        onChange={(e) => setSourceTarget((prev) => ({ ...prev, target: e.target.value }))}
+        value={sourceTarget.target}
+        disabled={isWorking}
+        placeholder='Введите конечную вершину...'
+      />
 
-      <TextInput label='Начальная вершина' disabled={isWorking} placeholder='Введите начальную вершину...' />
-      <TextInput label='Конечная вершина' disabled={isWorking} placeholder='Введите конечную вершину...' />
+      <Button onClick={onSave}>Сохранить</Button>
 
       <Radio.Group label='Режим работы' defaultValue={mode} value={mode} onChange={(v) => setMode(v as Mode)}>
         <Stack>

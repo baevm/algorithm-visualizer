@@ -1,10 +1,11 @@
-import { DijkstraGenerator } from '@/helpers/algorithms/dijkstra'
+import { Dijkstra, DijkstraGenerator } from '@/helpers/algorithms/dijkstra'
 import { GraphEdge, GraphNode } from 'reagraph'
 import { create } from 'zustand'
 
 interface DijkstraStore {
   nodes: GraphNode[]
   edges: GraphEdge[]
+  actives: any[]
   source: string
   target: string
 
@@ -26,11 +27,12 @@ interface DijkstraStore {
 export const useDijkstraStore = create<DijkstraStore>((set) => ({
   nodes: [],
   edges: [],
-  source: '',
-  target: '',
+  source: 'n-0',
+  target: 'n-6',
   isWorking: false,
   isFound: false,
   generator: null,
+  actives: [],
 
   setNodes: (nodes) =>
     set(() => {
@@ -45,7 +47,8 @@ export const useDijkstraStore = create<DijkstraStore>((set) => ({
 
   startWorking: () =>
     set((state) => {
-      const generator = DijkstraMinDistance(state.nodes, state.edges, +state.source, +state.target)
+      const dijsktraCl = new Dijkstra(state.nodes, state.edges, state.source, state.target)
+      const generator = dijsktraCl.FindDistances()
 
       return { isWorking: true, generator }
     }),
@@ -59,15 +62,20 @@ export const useDijkstraStore = create<DijkstraStore>((set) => ({
       const { value, done } = state.generator.next()
 
       if (done) {
-        return { isWorking: false, isSorted: true }
+        return { isWorking: false, isFound: true }
       }
 
       console.log({ value })
 
-      return { isWorking: true }
+      return { isWorking: true, actives: value.actives, edges: value.edges }
     }),
-  reset: () => set({ isWorking: false }),
+
+  reset: () =>
+    set((state) => {
+      const edgesWithoutLabels = state.edges.map((edge) => ({ ...edge, label: '' }))
+
+      return { isWorking: false, isFound: false, actives: [], edges: edgesWithoutLabels }
+    }),
+
   pause: () => set({ isWorking: false }),
 }))
-
-function* DijkstraMinDistance(nodes: GraphNode[], edges: GraphEdge[], source: number, target: number) {}

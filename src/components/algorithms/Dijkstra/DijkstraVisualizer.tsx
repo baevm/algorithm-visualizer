@@ -4,12 +4,7 @@ import { useRef } from 'react'
 import { TbFocusCentered, TbZoomIn, TbZoomOut } from 'react-icons/tb'
 import { GraphCanvas, GraphCanvasRef } from 'reagraph'
 
-const actives = ['n-4']
-
 const theme = {
-  canvas: {
-    background: '#fff',
-  },
   node: {
     fill: '#7CA0AB',
     activeFill: '#1DE9AC',
@@ -18,7 +13,6 @@ const theme = {
     inactiveOpacity: 0.2,
     label: {
       color: '#2A6475',
-      stroke: '#fff',
       activeColor: '#1DE9AC',
     },
     subLabel: {
@@ -65,11 +59,14 @@ const theme = {
 }
 
 const DijkstraVisualizer = () => {
-  const { edges, nodes } = useDijkstraStore((state) => ({
+  const { edges, nodes, actives } = useDijkstraStore((state) => ({
     nodes: state.nodes,
     edges: state.edges,
+    actives: state.actives,
   }))
   const canvasRef = useRef<GraphCanvasRef | null>(null)
+  // edges on graph not updated without this ???
+  const copyEdges = [...edges]
 
   return (
     <Flex align='center' justify='center' h='100%' w='100%' pos='relative'>
@@ -86,7 +83,7 @@ const DijkstraVisualizer = () => {
       </Stack>
       <GraphCanvas
         nodes={nodes}
-        edges={edges}
+        edges={copyEdges}
         actives={actives}
         theme={theme}
         ref={canvasRef}
