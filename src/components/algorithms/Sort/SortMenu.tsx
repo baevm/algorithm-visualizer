@@ -15,8 +15,10 @@ const SortMenu = () => {
     isWorking,
     isShowNumbers,
     isSorted,
+    isShowStats,
     setAlgorithm,
     setIsShowNumbers,
+    setIsShowStats,
     setArray,
     startWorking,
     nextStep,
@@ -28,6 +30,7 @@ const SortMenu = () => {
     isWorking: state.isWorking,
     isShowNumbers: state.isShowNumbers,
     isSorted: state.isSorted,
+    isShowStats: state.isShowStats,
     pause: state.pause,
     setArray: state.setArray,
     startWorking: state.startWorking,
@@ -35,6 +38,7 @@ const SortMenu = () => {
     nextStep: state.nextStep,
     reset: state.reset,
     setAlgorithm: state.setAlgorithm,
+    setIsShowStats: state.setIsShowStats,
   }))
   const { stepTimeout, setStepTimeout } = useAutoMode({
     isFound: isSorted,
@@ -84,11 +88,12 @@ const SortMenu = () => {
 
       <Textarea
         label='Массив для сортировки'
-        autosize
         placeholder='Введите массив в формате 1,2,3,4...'
         value={array.join(',')}
         onChange={onChangeArray}
         disabled={isWorking}
+        autosize
+        
       />
 
       <NumberInput
@@ -105,6 +110,12 @@ const SortMenu = () => {
         label='Показывать числа'
         checked={isShowNumbers}
         onChange={(e) => setIsShowNumbers(e.currentTarget.checked)}
+        disabled={isWorking}
+      />
+      <Switch
+        label='Показывать статистку'
+        checked={isShowStats}
+        onChange={(e) => setIsShowStats(e.currentTarget.checked)}
         disabled={isWorking}
       />
 

@@ -8,15 +8,21 @@ interface SortStore {
   activeIndexes: number[]
 
   isWorking: boolean
-  isShowNumbers: boolean
   isSorted: boolean
 
   generator: SortGenerator | null
 
+  isShowNumbers: boolean
+  isShowStats: boolean
+  comparsionCount: number
+  arrayAccessCount: number
+
   setAlgorithm: (algorithm: SortAlgorithm) => void
   setArray: (searchArray: string[]) => void
   startWorking: () => void
+
   setIsShowNumbers: (val: boolean) => void
+  setIsShowStats: (val: boolean) => void
 
   nextStep: () => void
   pause: () => void
@@ -28,13 +34,24 @@ export const useSortStore = create<SortStore>((set) => ({
   array: [],
   activeIndexes: [],
   isWorking: false,
-  isShowNumbers: false,
   isSorted: false,
-
   generator: null,
+  isShowNumbers: false,
+  isShowStats: false,
+  comparsionCount: 0,
+  arrayAccessCount: 0,
 
   setAlgorithm: (algorithm) => set(() => ({ algorithm })),
-  setArray: (array) => set({ array, activeIndexes: [], isWorking: false, isSorted: false, generator: null }),
+  setArray: (array) =>
+    set({
+      array,
+      activeIndexes: [],
+      isWorking: false,
+      isSorted: false,
+      generator: null,
+      comparsionCount: 0,
+      arrayAccessCount: 0,
+    }),
 
   startWorking: () =>
     set((state) => {
@@ -56,7 +73,8 @@ export const useSortStore = create<SortStore>((set) => ({
       return { isWorking: true, generator }
     }),
 
-  setIsShowNumbers: (val) => set(() => ({ isShowNumbers: val })),
+  setIsShowNumbers: (isShowNumbers) => set(() => ({ isShowNumbers })),
+  setIsShowStats: (isShowStats) => set(() => ({ isShowStats })),
 
   nextStep: () => {
     set((state) => {
@@ -70,11 +88,25 @@ export const useSortStore = create<SortStore>((set) => ({
         return { isWorking: false, isSorted: true }
       }
 
-      return { array: value.array, activeIndexes: value.activeIndexes }
+      return {
+        array: value.array,
+        activeIndexes: value.activeIndexes,
+        comparsionCount: value.comparsionCount,
+        arrayAccessCount: value.arrayAccessCount,
+      }
     })
   },
 
   pause: () => set(() => ({ isWorking: false })),
 
-  reset: () => set(() => ({ array: [], activeIndexes: [], isWorking: false, isSorted: false, generator: null })),
+  reset: () =>
+    set(() => ({
+      array: [],
+      activeIndexes: [],
+      isWorking: false,
+      isSorted: false,
+      generator: null,
+      comparsionCount: 0,
+      arrayAccessCount: 0,
+    })),
 }))

@@ -14,7 +14,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
         breakpoint: 'sm',
         collapsed: { mobile: !opened },
       }}
-      padding='md'>
+      padding='xs'>
       <AppShell.Header>
         <Header opened={opened} toggle={toggle} />
       </AppShell.Header>
