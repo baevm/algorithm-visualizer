@@ -93,7 +93,6 @@ const SortMenu = () => {
         onChange={onChangeArray}
         disabled={isWorking}
         autosize
-        
       />
 
       <NumberInput
@@ -126,6 +125,7 @@ const SortMenu = () => {
         onChange={(v) => setAlgorithm(v as SortAlgorithm)}>
         <Stack>
           <Radio label='Сортировка пузырьком' value='bubble-sort' disabled={isWorking} />
+          <Radio label='Шейкерная сортировка' value='shaker-sort' disabled={isWorking} />
           <Radio label='Сортировка вставками' value='insertion-sort' disabled={isWorking} />
           <Radio label='Сортировка выбором' value='selection-sort' disabled={isWorking} />
           <Radio label='Сортировка слиянием' value='merge-sort' disabled={isWorking} />

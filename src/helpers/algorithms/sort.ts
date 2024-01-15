@@ -1,12 +1,14 @@
 export class Sort {
   private array: string[]
   private algorithm: SortAlgorithm
-  static readonly sortAlgorithms = [
-    'bubble-sort',
-    'insertion-sort',
-    'merge-sort',
-    'quick-sort',
-    'selection-sort',
+
+  static readonly sortAlgorithms: Array<{ value: string; translation: string }> = [
+    { value: 'bubble-sort', translation: 'Сортировка пузырьком' },
+    { value: 'shaker-sort', translation: 'Шейкерная сортировка' },
+    { value: 'insertion-sort', translation: 'Сортировка вставками' },
+    { value: 'selection-sort', translation: 'Сортировка выбором' },
+    { value: 'merge-sort', translation: 'Сортировка слиянием' },
+    { value: 'quick-sort', translation: 'Быстрая сортировка' },
   ] as const
 
   constructor(array: string[], algorithm: SortAlgorithm) {
@@ -18,6 +20,9 @@ export class Sort {
     switch (this.algorithm) {
       case 'bubble-sort':
         return this.bubbleSort(this.array)
+
+      case 'shaker-sort':
+        return this.shakerSort(this.array)
 
       case 'insertion-sort':
         return this.insertionSort(this.array)
@@ -59,6 +64,52 @@ export class Sort {
           arrayAccessCount += 4
         }
       }
+    }
+  }
+
+  private *shakerSort(array: string[]) {
+    let comparsionCount = 0
+    let arrayAccessCount = 0
+
+    let start = 0
+    let end = array.length - 1
+
+    while (start < end) {
+      // sort from left to right
+      for (let i = start; i < end; i++) {
+        comparsionCount += 1
+        arrayAccessCount += 2
+
+        if (parseInt(array[i]) > parseInt(array[i + 1])) {
+          yield { array, activeIndexes: [i, i + 1], comparsionCount, arrayAccessCount }
+
+          const temp = array[i]
+          array[i] = array[i + 1]
+          array[i + 1] = temp
+
+          arrayAccessCount += 4
+        }
+      }
+
+      end -= 1
+
+      // sort from right to left
+      for (let i = end; i > start; i--) {
+        comparsionCount += 1
+        arrayAccessCount += 2
+
+        if (parseInt(array[i]) < parseInt(array[i - 1])) {
+          yield { array, activeIndexes: [i, i - 1], comparsionCount, arrayAccessCount }
+
+          const temp = array[i]
+          array[i] = array[i - 1]
+          array[i - 1] = temp
+
+          arrayAccessCount += 4
+        }
+      }
+
+      start += 1
     }
   }
 
@@ -322,4 +373,4 @@ export type SortGenerator = Generator<
   unknown
 >
 
-export type SortAlgorithm = (typeof Sort.sortAlgorithms)[number]
+export type SortAlgorithm = (typeof Sort.sortAlgorithms)[number]['value']

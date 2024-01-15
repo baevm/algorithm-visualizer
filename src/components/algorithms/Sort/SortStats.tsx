@@ -1,16 +1,7 @@
-import { SortAlgorithm } from '@/helpers/algorithms/sort'
+import { Sort } from '@/helpers/algorithms/sort'
 import { useSortStore } from '@/stores/sortStore'
 import { Group, Text } from '@mantine/core'
-import { useEffect, useState } from 'react'
-
-// TODO: refactor to array. use in menu
-const algorithmTranslate: Record<SortAlgorithm, string> = {
-  'bubble-sort': 'Сортировка пузырьком',
-  'insertion-sort': 'Сортировка вставками',
-  'selection-sort': 'Сортировка выбором',
-  'merge-sort': 'Сортировка слиянием',
-  'quick-sort': 'Быстрая сортировка',
-}
+import { useEffect, useMemo, useState } from 'react'
 
 const SortStats = () => {
   const [time, setTime] = useState(0)
@@ -21,6 +12,10 @@ const SortStats = () => {
     arrayAccessCount: state.arrayAccessCount,
     isWorking: state.isWorking,
   }))
+
+  const currentAlgoritmTranslation = useMemo(() => {
+    return Sort.sortAlgorithms.find((item) => item.value === algorithm)!.translation
+  }, [algorithm])
 
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null
@@ -43,7 +38,7 @@ const SortStats = () => {
 
   return (
     <Group w='100%' style={{ justifySelf: '' }}>
-      <Text fw='bold'>{algorithmTranslate[algorithm]}:</Text>
+      <Text fw='bold'>{currentAlgoritmTranslation}:</Text>
       <Text>Сравнений: {comparsionCount}</Text>
       <Text>Обращений к массиву: {arrayAccessCount}</Text>
       <Text>Время: {time} с.</Text>
