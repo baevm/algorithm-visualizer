@@ -1,27 +1,17 @@
 import { Dijkstra, defaultEdges, defaultNodes } from '@/helpers/algorithms/dijkstra'
 import { useAutoMode } from '@/hooks/useAutoMode'
 import { Mode, useOperatingMode } from '@/hooks/useOperatingMode'
-import { useDijkstraStore } from '@/stores/dijkstraStore'
+import { dijkstraStore } from '@/stores/dijkstraStore'
 import { Button, Group, NumberInput, Radio, Stack, TextInput, Textarea } from '@mantine/core'
+import { observer } from 'mobx-react-lite'
 import { useEffect, useState } from 'react'
 
-const DijkstraMenu = () => {
+const DijkstraMenu = observer(() => {
   const [textAreaEdges, setTextAreaEdges] = useState(Dijkstra.formatEdgesToText(defaultEdges))
   const [sourceTarget, setSourceTarget] = useState<{ source: string; target: string }>({ source: '0', target: '6' })
   const { mode, setMode } = useOperatingMode()
   const { isWorking, isFound, startWorking, setSource, setTarget, nextStep, reset, pause, setEdges, setNodes } =
-    useDijkstraStore((state) => ({
-      isWorking: state.isWorking,
-      isFound: state.isFound,
-      pause: state.pause,
-      startWorking: state.startWorking,
-      nextStep: state.nextStep,
-      reset: state.reset,
-      setNodes: state.setNodes,
-      setEdges: state.setEdges,
-      setSource: state.setSource,
-      setTarget: state.setTarget,
-    }))
+    dijkstraStore
 
   const { stepTimeout, setStepTimeout } = useAutoMode({
     isFound,
@@ -66,7 +56,9 @@ const DijkstraMenu = () => {
   return (
     <Stack>
       <Group justify='space-between' grow>
-        <Button onClick={setRandomData}>Рандом</Button>
+        <Button onClick={setRandomData} disabled>
+          Рандом
+        </Button>
         <Button onClick={reset}>Сбросить</Button>
       </Group>
       <Group justify='space-between' grow>
@@ -128,6 +120,6 @@ const DijkstraMenu = () => {
       )}
     </Stack>
   )
-}
+})
 
 export default DijkstraMenu

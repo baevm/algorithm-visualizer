@@ -1,18 +1,11 @@
-import { useBinarySearch } from '@/stores/binarySearchStore'
+import { binarySearchStore } from '@/stores/binarySearchStore'
 import { Box, Flex, Group, Stack } from '@mantine/core'
+import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
 import { TbArrowNarrowUp } from 'react-icons/tb'
 
-const BinarySearchVisualizer = () => {
-  const { array, left, mid, right, isFound, isNotExist } = useBinarySearch((state) => ({
-    array: state.array,
-    target: state.target,
-    left: state.left,
-    right: state.right,
-    mid: state.mid,
-    isFound: state.isFound,
-    isNotExist: state.isNotExist,
-  }))
+const BinarySearchVisualizer = observer(() => {
+  const { array, left, mid, right, isFound, isNotExist } = binarySearchStore
 
   useEffect(() => {
     if (isFound) {
@@ -76,6 +69,6 @@ const BinarySearchVisualizer = () => {
       </Group>
     </Flex>
   )
-}
+})
 
 export default BinarySearchVisualizer

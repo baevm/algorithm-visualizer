@@ -1,112 +1,98 @@
 import { Sort, SortAlgorithm, SortGenerator } from '@/helpers/algorithms/sort'
 import { validateArray } from '@/lib/validator'
-import { create } from 'zustand'
+import { makeAutoObservable } from 'mobx'
 
-interface SortStore {
-  algorithm: SortAlgorithm
-  array: string[]
-  activeIndexes: number[]
+class SortStore {
+  algorithm: SortAlgorithm = 'bubble-sort'
+  array: string[] = []
+  activeIndexes: number[] = []
+  isWorking = false
+  isSorted = false
+  generator: SortGenerator | null = null
+  isShowNumbers = false
+  isShowStats = false
+  comparsionCount = 0
+  arrayAccessCount = 0
 
-  isWorking: boolean
-  isSorted: boolean
+  constructor() {
+    makeAutoObservable(this)
+  }
 
-  generator: SortGenerator | null
+  setArray = (array: string[]) => {
+    this.array = array
+    this.activeIndexes = []
+    this.isWorking = false
+    this.isSorted = false
+    this.generator = null
+    this.comparsionCount = 0
+    this.arrayAccessCount = 0
+  }
 
-  isShowNumbers: boolean
-  isShowStats: boolean
-  comparsionCount: number
-  arrayAccessCount: number
+  setAlgorithm = (algorithm: SortAlgorithm) => {
+    this.algorithm = algorithm
+  }
 
-  setAlgorithm: (algorithm: SortAlgorithm) => void
-  setArray: (searchArray: string[]) => void
-  startWorking: () => void
+  setIsShowNumbers = (isShowNumbers: boolean) => {
+    this.isShowNumbers = isShowNumbers
+  }
 
-  setIsShowNumbers: (val: boolean) => void
-  setIsShowStats: (val: boolean) => void
+  setIsShowStats = (isShowStats: boolean) => {
+    this.isShowStats = isShowStats
+  }
 
-  nextStep: () => void
-  pause: () => void
-  reset: () => void
+  startWorking = () => {
+    const isValidArray = validateArray(this.array)
+
+    if (!isValidArray) {
+      return
+    }
+
+    // Если генератор не равен null, то значит
+    // пользователь поставил на паузу сортировку и хочет продолжить
+    if (this.generator != null) {
+      this.isWorking = true
+      return
+    }
+
+    const sorter = new Sort(this.array, this.algorithm)
+
+    this.generator = sorter.makeGenerator()
+    this.isWorking = true
+  }
+
+  nextStep = () => {
+    if (!this.isWorking || !this.generator) {
+      return
+    }
+
+    const { value, done } = this.generator.next()
+
+    if (done) {
+      this.isWorking = false
+      this.isSorted = true
+
+      return
+    }
+
+    this.array = value.array
+    this.activeIndexes = value.activeIndexes
+    this.comparsionCount = value.comparsionCount
+    this.arrayAccessCount = value.arrayAccessCount
+  }
+
+  pause = () => {
+    this.isWorking = false
+  }
+
+  reset = () => {
+    this.array = []
+    this.activeIndexes = []
+    this.isWorking = false
+    this.isSorted = false
+    this.generator = null
+    this.comparsionCount = 0
+    this.arrayAccessCount = 0
+  }
 }
 
-export const useSortStore = create<SortStore>((set) => ({
-  algorithm: 'bubble-sort',
-  array: [],
-  activeIndexes: [],
-  isWorking: false,
-  isSorted: false,
-  generator: null,
-  isShowNumbers: false,
-  isShowStats: false,
-  comparsionCount: 0,
-  arrayAccessCount: 0,
-
-  setAlgorithm: (algorithm) => set(() => ({ algorithm })),
-  setArray: (array) =>
-    set({
-      array,
-      activeIndexes: [],
-      isWorking: false,
-      isSorted: false,
-      generator: null,
-      comparsionCount: 0,
-      arrayAccessCount: 0,
-    }),
-
-  startWorking: () =>
-    set((state) => {
-      const isValidArray = validateArray(state.array)
-
-      if (!isValidArray) {
-        return {}
-      }
-
-      // Если генератор не равен null, то значит
-      // пользователь поставил на паузу сортировку и хочет продолжить
-      if (state.generator != null) {
-        return { isWorking: true }
-      }
-
-      const sorter = new Sort(state.array, state.algorithm)
-      const generator = sorter.makeGenerator()
-
-      return { isWorking: true, generator }
-    }),
-
-  setIsShowNumbers: (isShowNumbers) => set(() => ({ isShowNumbers })),
-  setIsShowStats: (isShowStats) => set(() => ({ isShowStats })),
-
-  nextStep: () => {
-    set((state) => {
-      if (!state.isWorking || !state.generator) {
-        return {}
-      }
-
-      const { value, done } = state.generator.next()
-
-      if (done) {
-        return { isWorking: false, isSorted: true }
-      }
-
-      return {
-        array: value.array,
-        activeIndexes: value.activeIndexes,
-        comparsionCount: value.comparsionCount,
-        arrayAccessCount: value.arrayAccessCount,
-      }
-    })
-  },
-
-  pause: () => set(() => ({ isWorking: false })),
-
-  reset: () =>
-    set(() => ({
-      array: [],
-      activeIndexes: [],
-      isWorking: false,
-      isSorted: false,
-      generator: null,
-      comparsionCount: 0,
-      arrayAccessCount: 0,
-    })),
-}))
+export const sortStore = new SortStore()

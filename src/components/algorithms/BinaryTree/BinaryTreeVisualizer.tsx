@@ -1,15 +1,13 @@
-import { useBinaryTree } from '@/stores/binaryTreeStore'
+import { binaryTreeStore } from '@/stores/binaryTreeStore'
 import { Center, Flex, Text } from '@mantine/core'
+import { observer } from 'mobx-react-lite'
 import { useEffect, useRef, useState } from 'react'
 import Tree, { CustomNodeElementProps } from 'react-d3-tree'
 
-const BinaryTreeVisualizer = () => {
-  const { array, currentNode } = useBinaryTree((state) => ({
-    array: state.array,
-    currentNode: state.currentNode,
-  }))
+const BinaryTreeVisualizer = observer(() => {
   const treeContainer = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 }) // ширина и высота для центрирования дерева
+  const { array, currentNode } = binaryTreeStore
 
   const objectTree = arrayToObjectTree(array)
 
@@ -42,7 +40,7 @@ const BinaryTreeVisualizer = () => {
       />
     </Flex>
   )
-}
+})
 
 export default BinaryTreeVisualizer
 

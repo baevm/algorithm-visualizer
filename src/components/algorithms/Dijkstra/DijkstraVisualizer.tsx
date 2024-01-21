@@ -1,5 +1,6 @@
-import { useDijkstraStore } from '@/stores/dijkstraStore'
+import { dijkstraStore } from '@/stores/dijkstraStore'
 import { ActionIcon, Flex, Stack } from '@mantine/core'
+import { observer } from 'mobx-react-lite'
 import { useRef } from 'react'
 import { TbFocusCentered, TbZoomIn, TbZoomOut } from 'react-icons/tb'
 import { GraphCanvas, GraphCanvasRef } from 'reagraph'
@@ -58,12 +59,8 @@ const theme = {
   },
 }
 
-const DijkstraVisualizer = () => {
-  const { edges, nodes, actives } = useDijkstraStore((state) => ({
-    nodes: state.nodes,
-    edges: state.edges,
-    actives: state.actives,
-  }))
+const DijkstraVisualizer = observer(() => {
+  const { edges, nodes, actives } = dijkstraStore
   const canvasRef = useRef<GraphCanvasRef | null>(null)
   // edges on graph not updated without this ???
   const copyEdges = [...edges]
@@ -93,6 +90,6 @@ const DijkstraVisualizer = () => {
       />
     </Flex>
   )
-}
+})
 
 export default DijkstraVisualizer

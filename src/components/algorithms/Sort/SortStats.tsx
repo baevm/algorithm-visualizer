@@ -1,17 +1,12 @@
 import { Sort } from '@/helpers/algorithms/sort'
-import { useSortStore } from '@/stores/sortStore'
+import { sortStore } from '@/stores/sortStore'
 import { Group, Text } from '@mantine/core'
+import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo, useState } from 'react'
 
-const SortStats = () => {
+const SortStats = observer(() => {
   const [time, setTime] = useState(0)
-  const { algorithm, arrayAccessCount, comparsionCount, isWorking } = useSortStore((state) => ({
-    algorithm: state.algorithm,
-
-    comparsionCount: state.comparsionCount,
-    arrayAccessCount: state.arrayAccessCount,
-    isWorking: state.isWorking,
-  }))
+  const { algorithm, arrayAccessCount, comparsionCount, isWorking } = sortStore
 
   const currentAlgoritmTranslation = useMemo(() => {
     return Sort.sortAlgorithms.find((item) => item.value === algorithm)!.translation
@@ -44,6 +39,6 @@ const SortStats = () => {
       <Text>Время: {time} с.</Text>
     </Group>
   )
-}
+})
 
 export default SortStats

@@ -1,12 +1,9 @@
-import { useSortStore } from '@/stores/sortStore'
+import { sortStore } from '@/stores/sortStore'
 import { Box, Group, Stack } from '@mantine/core'
+import { observer } from 'mobx-react-lite'
 
-const SortBoxes = () => {
-  const { isShowNumbers, array, activeIndexes } = useSortStore((state) => ({
-    array: state.array,
-    isShowNumbers: state.isShowNumbers,
-    activeIndexes: state.activeIndexes,
-  }))
+const SortBoxes = observer(() => {
+  const { isShowNumbers, array, activeIndexes } = sortStore
 
   const max = Math.max(...array.map((item) => +item))
   const len = array.length
@@ -43,6 +40,6 @@ const SortBoxes = () => {
       </Group>
     </Stack>
   )
-}
+})
 
 export default SortBoxes

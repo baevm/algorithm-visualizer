@@ -2,11 +2,12 @@ import { SortAlgorithm } from '@/helpers/algorithms/sort'
 import { useAutoMode } from '@/hooks/useAutoMode'
 import { Mode, useOperatingMode } from '@/hooks/useOperatingMode'
 import { generateUnsortedArray } from '@/lib/random'
-import { useSortStore } from '@/stores/sortStore'
+import { sortStore } from '@/stores/sortStore'
 import { Button, Group, NumberInput, Radio, Stack, Switch, Textarea } from '@mantine/core'
+import { observer } from 'mobx-react-lite'
 import { useEffect, useState } from 'react'
 
-const SortMenu = () => {
+const SortMenu = observer(() => {
   const { mode, setMode } = useOperatingMode()
   const [arraySize, setArraySize] = useState('50')
   const {
@@ -24,22 +25,8 @@ const SortMenu = () => {
     nextStep,
     reset,
     pause,
-  } = useSortStore((state) => ({
-    algorithm: state.algorithm,
-    array: state.array,
-    isWorking: state.isWorking,
-    isShowNumbers: state.isShowNumbers,
-    isSorted: state.isSorted,
-    isShowStats: state.isShowStats,
-    pause: state.pause,
-    setArray: state.setArray,
-    startWorking: state.startWorking,
-    setIsShowNumbers: state.setIsShowNumbers,
-    nextStep: state.nextStep,
-    reset: state.reset,
-    setAlgorithm: state.setAlgorithm,
-    setIsShowStats: state.setIsShowStats,
-  }))
+  } = sortStore
+
   const { stepTimeout, setStepTimeout } = useAutoMode({
     isFound: isSorted,
     isWorking,
@@ -153,6 +140,6 @@ const SortMenu = () => {
       )}
     </Stack>
   )
-}
+})
 
 export default SortMenu

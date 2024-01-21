@@ -1,24 +1,14 @@
 import { useAutoMode } from '@/hooks/useAutoMode'
 import { Mode, useOperatingMode } from '@/hooks/useOperatingMode'
 import { generateRandomSortedArray } from '@/lib/random'
-import { useBinarySearch } from '@/stores/binarySearchStore'
+import { binarySearchStore } from '@/stores/binarySearchStore'
 import { Button, Group, NumberInput, Radio, Stack, Textarea } from '@mantine/core'
+import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
 
-const BinarySearchMenu = () => {
+const BinarySearchMenu = observer(() => {
   const { array, target, isWorking, isFound, setArray, setIsWorking, setTarget, nextStep, beforeStep, reset } =
-    useBinarySearch((state) => ({
-      array: state.array,
-      target: state.target,
-      isWorking: state.isWorking,
-      isFound: state.isFound,
-      setArray: state.setArray,
-      setTarget: state.setTarget,
-      nextStep: state.nextStep,
-      beforeStep: state.beforeStep,
-      reset: state.reset,
-      setIsWorking: state.setIsWorking,
-    }))
+    binarySearchStore
 
   const { mode, setMode } = useOperatingMode()
   const { stepTimeout, setStepTimeout } = useAutoMode({
@@ -116,6 +106,6 @@ const BinarySearchMenu = () => {
       )}
     </Stack>
   )
-}
+})
 
 export default BinarySearchMenu
