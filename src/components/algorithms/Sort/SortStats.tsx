@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 const SortStats = observer(() => {
   const [time, setTime] = useState(0)
-  const { algorithm, arrayAccessCount, comparsionCount, isWorking } = sortStore
+  const { algorithm, stats, isWorking } = sortStore
 
   const currentAlgoritmTranslation = useMemo(() => {
     return Sort.sortAlgorithms.find((item) => item.value === algorithm)!.translation
@@ -34,8 +34,8 @@ const SortStats = observer(() => {
   return (
     <Group w='100%' style={{ justifySelf: '' }}>
       <Text fw='bold'>{currentAlgoritmTranslation}:</Text>
-      <Text>Сравнений: {comparsionCount}</Text>
-      <Text>Обращений к массиву: {arrayAccessCount}</Text>
+      <Text>Сравнений: {stats.comparsionCount}</Text>
+      <Text>Обращений к массиву: {stats.arrayAccessCount}</Text>
       <Text>Время: {time} с.</Text>
     </Group>
   )

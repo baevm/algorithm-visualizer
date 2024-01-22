@@ -1,6 +1,6 @@
 import { Sort, SortAlgorithm, SortGenerator } from '@/helpers/algorithms/sort'
 import { validateArray } from '@/lib/validator'
-import { makeAutoObservable } from 'mobx'
+import { makeAutoObservable, runInAction } from 'mobx'
 
 class SortStore {
   algorithm: SortAlgorithm = 'bubble-sort'
@@ -11,8 +11,10 @@ class SortStore {
   generator: SortGenerator | null = null
   isShowNumbers = false
   isShowStats = false
-  comparsionCount = 0
-  arrayAccessCount = 0
+  stats: Stats = {
+    comparsionCount: 0,
+    arrayAccessCount: 0,
+  }
 
   constructor() {
     makeAutoObservable(this)
@@ -24,8 +26,10 @@ class SortStore {
     this.isWorking = false
     this.isSorted = false
     this.generator = null
-    this.comparsionCount = 0
-    this.arrayAccessCount = 0
+    this.stats = {
+      comparsionCount: 0,
+      arrayAccessCount: 0,
+    }
   }
 
   setAlgorithm = (algorithm: SortAlgorithm) => {
@@ -54,7 +58,21 @@ class SortStore {
       return
     }
 
-    const sorter = new Sort(this.array, this.algorithm)
+    const arrayWithStats = new Proxy(this.array, {
+      get: (target, prop) => {
+        // ignore mobx calls, map(), join() etc.
+        // count only numberic indexes
+        if (isNumeric(prop)) {
+          runInAction(() => {
+            this.stats.arrayAccessCount += 1
+          })
+        }
+
+        return target[prop as any]
+      },
+    })
+
+    const sorter = new Sort(arrayWithStats, this.algorithm)
 
     this.generator = sorter.makeGenerator()
     this.isWorking = true
@@ -76,8 +94,7 @@ class SortStore {
 
     this.array = value.array
     this.activeIndexes = value.activeIndexes
-    this.comparsionCount = value.comparsionCount
-    this.arrayAccessCount = value.arrayAccessCount
+    this.stats.comparsionCount = value.comparsionCount
   }
 
   pause = () => {
@@ -90,9 +107,19 @@ class SortStore {
     this.isWorking = false
     this.isSorted = false
     this.generator = null
-    this.comparsionCount = 0
-    this.arrayAccessCount = 0
+    this.stats = {
+      comparsionCount: 0,
+      arrayAccessCount: 0,
+    }
   }
 }
 
 export const sortStore = new SortStore()
+
+type Stats = {
+  comparsionCount: number
+  arrayAccessCount: number
+}
+
+const isNumeric = (num: any) =>
+  (typeof num === 'number' || (typeof num === 'string' && num.trim() !== '')) && !isNaN(num as number)
