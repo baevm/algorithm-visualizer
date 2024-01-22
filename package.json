@@ -12,13 +12,14 @@
   "dependencies": {
     "@mantine/core": "^7.3.2",
     "@mantine/hooks": "^7.3.2",
+    "mobx": "^6.12.0",
+    "mobx-react-lite": "^4.0.5",
     "react": "^18.2.0",
     "react-d3-tree": "^3.6.2",
     "react-dom": "^18.2.0",
     "react-icons": "^4.12.0",
     "react-router-dom": "^6.21.1",
-    "reagraph": "^4.15.4",
-    "zustand": "^4.4.7"
+    "reagraph": "^4.15.4"
   },
   "devDependencies": {
     "@types/node": "^20.10.4",

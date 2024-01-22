@@ -1,67 +1,73 @@
 import { BinaryTree, BinaryTreeAlgortihm, TreeGenerator } from '@/helpers/algorithms/binaryTree'
-import { create } from 'zustand'
+import { makeAutoObservable } from 'mobx'
 
-interface BinaryTreeStore {
-  array: (string | 'null')[]
-  target: string | null
-  isWorking: boolean
-  isFound: boolean
-  algorithm: BinaryTreeAlgortihm
-  generator: TreeGenerator | null
-  currentNode: string | null
-
-  setArray: (searchArray: string[]) => void
-  setTarget: (target: string) => void
-  startWorking: () => void
-  nextStep: () => void
-  reset: () => void
-  setAlgorithm: (algorithm: BinaryTreeAlgortihm) => void
-}
-
-export const useBinaryTree = create<BinaryTreeStore>((set) => ({
-  array: [],
-  target: null,
-  isWorking: false,
-  isFound: false,
-  algorithm: {
+class BinaryTreeStore {
+  array: (string | 'null')[] = []
+  target: string | null = null
+  isWorking = false
+  isFound = false
+  algorithm: BinaryTreeAlgortihm = {
     type: 'bfs',
     technique: 'preorder',
-  },
-  generator: null,
-  currentNode: null,
+  }
+  generator: TreeGenerator | null = null
+  currentNode: string | null = null
 
-  setArray: (array) => set({ array }),
-  setTarget: (target) => set({ target }),
-  setAlgorithm: (algorithm) => set({ algorithm }),
+  constructor() {
+    makeAutoObservable(this)
+  }
 
-  startWorking: () =>
-    set((state) => {
-      // Если генератор не равен null, то значит
-      // пользователь поставил на паузу сортировку и хочет продолжить
-      if (state.generator != null) {
-        return { isWorking: true }
-      }
+  setArray = (array: string[]) => {
+    this.array = array
+  }
 
-      const binaryTreer = new BinaryTree(state.algorithm, state.array, state.target)
-      const generator = binaryTreer.makeGenerator()
+  setTarget = (target: string) => {
+    this.target = target
+  }
 
-      return { isWorking: !state.isWorking, generator }
-    }),
+  setAlgorithm = (algorithm: BinaryTreeAlgortihm) => {
+    this.algorithm = algorithm
+  }
 
-  nextStep: () =>
-    set((state) => {
-      if (!state.isWorking || !state.generator) {
-        return {}
-      }
+  startWorking = () => {
+    // Если генератор не равен null, то значит
+    // пользователь поставил на паузу сортировку и хочет продолжить
+    if (this.generator != null) {
+      this.isWorking = true
+      return
+    }
 
-      const { value, done } = state.generator.next()
+    const binaryTreer = new BinaryTree(this.algorithm, this.array, this.target)
 
-      if (done) {
-        return { isWorking: false, isFound: true }
-      }
+    this.generator = binaryTreer.makeGenerator()
+    this.isWorking = true
 
-      return { currentNode: value.target }
-    }),
+    return
+  }
 
-  reset: () => set({ isWorking: false, isFound: false, currentNode: null, generator: null }),
-}))
+  nextStep = () => {
+    if (!this.isWorking || !this.generator) {
+      return
+    }
+
+    const { value, done } = this.generator.next()
+
+    if (done) {
+      this.isWorking = false
+      this.isFound = true
+
+      return
+    }
+
+    this.currentNode = value.target || null
+  }
+
+  reset = () => {
+    this.isWorking = false
+    this.isFound = false
+    this.currentNode = null
+    this.generator = null
+  }
+}
+
+export const binaryTreeStore = new BinaryTreeStore()

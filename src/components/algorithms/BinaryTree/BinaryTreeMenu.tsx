@@ -1,11 +1,12 @@
 import { DFSTechnique, TreeAlgorithmType } from '@/helpers/algorithms/binaryTree'
 import { useAutoMode } from '@/hooks/useAutoMode'
 import { Mode, useOperatingMode } from '@/hooks/useOperatingMode'
-import { useBinaryTree } from '@/stores/binaryTreeStore'
+import { binaryTreeStore } from '@/stores/binaryTreeStore'
 import { Button, Group, NumberInput, Radio, Stack, Textarea } from '@mantine/core'
+import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
 
-const BinaryTreeMenu = () => {
+const BinaryTreeMenu = observer(() => {
   const { mode, setMode } = useOperatingMode()
   const {
     array,
@@ -19,19 +20,7 @@ const BinaryTreeMenu = () => {
     nextStep,
     reset,
     setAlgorithm,
-  } = useBinaryTree((state) => ({
-    array: state.array,
-    target: state.target,
-    isWorking: state.isWorking,
-    isFound: state.isFound,
-    algorithm: state.algorithm,
-    setArray: state.setArray,
-    setTarget: state.setTarget,
-    nextStep: state.nextStep,
-    reset: state.reset,
-    startWorking: state.startWorking,
-    setAlgorithm: state.setAlgorithm,
-  }))
+  } = binaryTreeStore
 
   const { stepTimeout, setStepTimeout } = useAutoMode({
     isFound,
@@ -67,6 +56,14 @@ const BinaryTreeMenu = () => {
       reset()
     }
   }, [])
+
+  const changeAlgoType = (v: string) => {
+    setAlgorithm({ type: v as TreeAlgorithmType, technique: algorithm.technique })
+  }
+
+  const changeAlgoTech = (v: string) => {
+    setAlgorithm({ type: algorithm.type, technique: v as DFSTechnique })
+  }
 
   return (
     <Stack>
@@ -110,11 +107,7 @@ const BinaryTreeMenu = () => {
         hideControls={true}
       />
 
-      <Radio.Group
-        label='Алгоритм'
-        defaultValue={algorithm.type}
-        value={algorithm.type}
-        onChange={(v) => setAlgorithm({ type: v as TreeAlgorithmType, technique: algorithm.technique })}>
+      <Radio.Group label='Алгоритм' defaultValue={algorithm.type} value={algorithm.type} onChange={changeAlgoType}>
         <Stack>
           <Radio disabled={isWorking} label='BFS' value='bfs' />
           <Radio disabled={isWorking} label='DFS' value='dfs' />
@@ -126,7 +119,7 @@ const BinaryTreeMenu = () => {
           label='Алгоритм обхода дерева'
           defaultValue={algorithm.technique}
           value={algorithm.technique}
-          onChange={(v) => setAlgorithm({ type: algorithm.type, technique: v as DFSTechnique })}>
+          onChange={changeAlgoTech}>
           <Stack>
             <Radio disabled={isWorking} label='Прямой (preorder)' value='preorder' />
             <Radio disabled={isWorking} label='Центрированный (inorder)' value='inorder' />
@@ -155,6 +148,6 @@ const BinaryTreeMenu = () => {
       )}
     </Stack>
   )
-}
+})
 
 export default BinaryTreeMenu

@@ -1,81 +1,74 @@
 import { Dijkstra, DijkstraGenerator } from '@/helpers/algorithms/dijkstra'
+import { makeAutoObservable } from 'mobx'
 import { GraphEdge, GraphNode } from 'reagraph'
-import { create } from 'zustand'
 
-interface DijkstraStore {
-  nodes: GraphNode[]
-  edges: GraphEdge[]
-  actives: any[]
-  source: string
-  target: string
+class DijkstraStore1 {
+  nodes: GraphNode[] = []
+  edges: GraphEdge[] = []
+  source = 'n-0'
+  target = 'n-6'
+  isWorking = false
+  isFound = false
+  generator: DijkstraGenerator | null = null
+  actives: any[] = []
 
-  isWorking: boolean
-  isFound: boolean
-  generator: DijkstraGenerator | null
+  constructor() {
+    makeAutoObservable(this)
+  }
 
-  setNodes(nodes: GraphNode[]): void
-  setEdges(edges: GraphEdge[]): void
-  setSource(source: string): void
-  setTarget(target: string): void
+  setNodes = (nodes: GraphNode[]) => {
+    this.nodes = nodes
+  }
 
-  startWorking(): void
-  nextStep(): void
-  reset(): void
-  pause(): void
+  setEdges = (edges: GraphEdge[]) => {
+    this.edges = edges
+  }
+
+  setSource = (source: string) => {
+    this.source = source
+  }
+
+  setTarget = (target: string) => {
+    this.target = target
+  }
+
+  startWorking = () => {
+    const dijsktraCl = new Dijkstra(this.nodes, this.edges, this.source, this.target)
+
+    this.generator = dijsktraCl.FindDistances()
+    this.isWorking = true
+  }
+
+  nextStep = () => {
+    if (!this.isWorking || !this.generator) {
+      return
+    }
+
+    const { value, done } = this.generator.next()
+
+    if (done) {
+      this.isWorking = false
+      this.isFound = true
+
+      return
+    }
+
+    this.actives = value.actives
+    this.edges = value.edges
+  }
+
+  reset = () => {
+    const edgesWithoutLabels = this.edges.map((edge) => ({ ...edge, label: '' }))
+
+    this.isWorking = false
+    this.isFound = false
+    this.actives = []
+    this.edges = edgesWithoutLabels
+  }
+
+  pause = () => {
+    this.isWorking = false
+  }
 }
 
-export const useDijkstraStore = create<DijkstraStore>((set) => ({
-  nodes: [],
-  edges: [],
-  source: 'n-0',
-  target: 'n-6',
-  isWorking: false,
-  isFound: false,
-  generator: null,
-  actives: [],
-
-  setNodes: (nodes) =>
-    set(() => {
-      return { nodes }
-    }),
-  setEdges: (edges) =>
-    set(() => {
-      return { edges }
-    }),
-  setSource: (source) => set({ source }),
-  setTarget: (target) => set({ target }),
-
-  startWorking: () =>
-    set((state) => {
-      const dijsktraCl = new Dijkstra(state.nodes, state.edges, state.source, state.target)
-      const generator = dijsktraCl.FindDistances()
-
-      return { isWorking: true, generator }
-    }),
-
-  nextStep: () =>
-    set((state) => {
-      if (!state.isWorking || !state.generator) {
-        return {}
-      }
-
-      const { value, done } = state.generator.next()
-
-      if (done) {
-        return { isWorking: false, isFound: true }
-      }
-
-      console.log({ value })
-
-      return { isWorking: true, actives: value.actives, edges: value.edges }
-    }),
-
-  reset: () =>
-    set((state) => {
-      const edgesWithoutLabels = state.edges.map((edge) => ({ ...edge, label: '' }))
-
-      return { isWorking: false, isFound: false, actives: [], edges: edgesWithoutLabels }
-    }),
-
-  pause: () => set({ isWorking: false }),
-}))
+export const dijkstraStore = new DijkstraStore1()
