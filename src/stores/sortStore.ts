@@ -1,6 +1,12 @@
 import { Sort, SortAlgorithm, SortGenerator } from '@/helpers/algorithms/sort'
+import { compare } from '@/lib/comparator'
 import { validateArray } from '@/lib/validator'
 import { makeAutoObservable, runInAction } from 'mobx'
+
+type Stats = {
+  comparsionCount: number
+  arrayAccessCount: number
+}
 
 class SortStore {
   algorithm: SortAlgorithm = 'bubble-sort'
@@ -72,7 +78,17 @@ class SortStore {
       },
     })
 
-    const sorter = new Sort(arrayWithStats, this.algorithm)
+    const compareWithStats = new Proxy(compare, {
+      apply: (target, thisArg, argArray: any) => {
+        runInAction(() => {
+          this.stats.comparsionCount += 1
+        })
+
+        return target.apply(thisArg, argArray)
+      },
+    })
+
+    const sorter = new Sort(arrayWithStats, this.algorithm, compareWithStats)
 
     this.generator = sorter.makeGenerator()
     this.isWorking = true
@@ -94,7 +110,6 @@ class SortStore {
 
     this.array = value.array
     this.activeIndexes = value.activeIndexes
-    this.stats.comparsionCount = value.comparsionCount
   }
 
   pause = () => {
@@ -115,11 +130,6 @@ class SortStore {
 }
 
 export const sortStore = new SortStore()
-
-type Stats = {
-  comparsionCount: number
-  arrayAccessCount: number
-}
 
 const isNumeric = (num: any) =>
   (typeof num === 'number' || (typeof num === 'string' && num.trim() !== '')) && !isNaN(num as number)
